@@ -1,0 +1,3 @@
+Este archivo no es un log
+Solo tiene texto sin formato de log
+No debería encontrar palabras relevantes aquí

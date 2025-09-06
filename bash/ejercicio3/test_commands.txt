@@ -1,0 +1,215 @@
+# =================================================
+# LOTE DE PRUEBAS COMPLETO - EJERCICIO 3 BASH
+# =================================================
+# Ejecutar desde el directorio: /home/tfelice/dev/vh/APL
+# Cada comando debe ejecutarse desde la raíz del proyecto
+
+echo "=== INICIANDO LOTE DE PRUEBAS EJERCICIO 3 ==="
+
+# =================================================
+# 1. PRUEBAS DE AYUDA
+# =================================================
+echo "=== 1. PRUEBAS DE AYUDA ==="
+
+echo "1.1 Ayuda con -h"
+./bash/ejercicio3/ejercicio3 -h
+
+echo -e "\n1.2 Ayuda con --help"
+./bash/ejercicio3/ejercicio3 --help
+
+# =================================================
+# 2. PRUEBAS DE PARÁMETROS INCORRECTOS
+# =================================================
+echo -e "\n=== 2. PRUEBAS DE PARÁMETROS INCORRECTOS ==="
+
+echo "2.1 Sin parámetros"
+./bash/ejercicio3/ejercicio3
+
+echo -e "\n2.2 Solo directorio sin palabras"
+./bash/ejercicio3/ejercicio3 -d ./bash/ejercicio3/in/caso_normal
+
+echo -e "\n2.3 Solo palabras sin directorio"
+./bash/ejercicio3/ejercicio3 -p "USB,Invalid"
+
+echo -e "\n2.4 Parámetro desconocido"
+./bash/ejercicio3/ejercicio3 -x parametro_malo
+
+echo -e "\n2.5 Palabras vacías"
+./bash/ejercicio3/ejercicio3 -d ./bash/ejercicio3/in/caso_normal -p ""
+
+echo -e "\n2.6 Palabras solo con comas"
+./bash/ejercicio3/ejercicio3 -d ./bash/ejercicio3/in/caso_normal -p ",,,"
+
+echo -e "\n2.7 Palabras con espacios vacíos"
+./bash/ejercicio3/ejercicio3 -d ./bash/ejercicio3/in/caso_normal -p " , , "
+
+# =================================================
+# 3. PRUEBAS DE DIRECTORIO INEXISTENTE/INVÁLIDO
+# =================================================
+echo -e "\n=== 3. PRUEBAS DE DIRECTORIO INEXISTENTE/INVÁLIDO ==="
+
+echo "3.1 Directorio inexistente"
+./bash/ejercicio3/ejercicio3 -d /directorio/inexistente -p "USB,Invalid"
+
+echo -e "\n3.2 Directorio sin archivos .log"
+./bash/ejercicio3/ejercicio3 -d ./bash/ejercicio3/in/caso_sin_logs -p "USB,Invalid"
+
+echo -e "\n3.3 Archivo en lugar de directorio"
+./bash/ejercicio3/ejercicio3 -d ./bash/ejercicio3/ejercicio3 -p "USB,Invalid"
+
+# =================================================
+# 4. PRUEBAS FUNCIONALES - CASO EJEMPLO DE LA CONSIGNA
+# =================================================
+echo -e "\n=== 4. PRUEBAS FUNCIONALES - CASO EJEMPLO ==="
+
+echo "4.1 Ejemplo exacto de la consigna"
+./bash/ejercicio3/ejercicio3 -d ./bash/ejercicio3/in/caso_normal -p "USB,Invalid"
+
+echo -e "\n4.2 Verificar que el conteo es correcto:"
+echo "Archivos en caso_normal:"
+grep -n "USB\|Invalid" ./bash/ejercicio3/in/caso_normal/*.log
+
+# =================================================
+# 5. PRUEBAS DE CASE-INSENSITIVE
+# =================================================
+echo -e "\n=== 5. PRUEBAS DE CASE-INSENSITIVE ==="
+
+echo "5.1 Búsqueda con minúsculas"
+./bash/ejercicio3/ejercicio3 -d ./bash/ejercicio3/in/caso_case_sensitive -p "usb,invalid,error"
+
+echo -e "\n5.2 Búsqueda con mayúsculas"
+./bash/ejercicio3/ejercicio3 -d ./bash/ejercicio3/in/caso_case_sensitive -p "USB,INVALID,ERROR"
+
+echo -e "\n5.3 Búsqueda con caso mixto"
+./bash/ejercicio3/ejercicio3 -d ./bash/ejercicio3/in/caso_case_sensitive -p "Usb,Invalid,Error"
+
+echo -e "\n5.4 Verificar contenido del archivo:"
+cat ./bash/ejercicio3/in/caso_case_sensitive/mixed_case.log
+
+# =================================================
+# 6. PRUEBAS CON ARCHIVO ÚNICO
+# =================================================
+echo -e "\n=== 6. PRUEBAS CON ARCHIVO ÚNICO ==="
+
+echo "6.1 Un solo archivo .log"
+./bash/ejercicio3/ejercicio3 -d ./bash/ejercicio3/in/caso_archivo_unico -p "USB,invalid"
+
+echo -e "\n6.2 Contenido del archivo único:"
+cat ./bash/ejercicio3/in/caso_archivo_unico/single.log
+
+# =================================================
+# 7. PRUEBAS CON DIFERENTES COMBINACIONES DE PALABRAS
+# =================================================
+echo -e "\n=== 7. PRUEBAS CON DIFERENTES PALABRAS ==="
+
+echo "7.1 Una sola palabra"
+./bash/ejercicio3/ejercicio3 -d ./bash/ejercicio3/in/caso_normal -p "error"
+
+echo -e "\n7.2 Muchas palabras"
+./bash/ejercicio3/ejercicio3 -d ./bash/ejercicio3/in/caso_normal -p "error,failed,exception,connection,timeout"
+
+echo -e "\n7.3 Palabras que no existen"
+./bash/ejercicio3/ejercicio3 -d ./bash/ejercicio3/in/caso_normal -p "palabra_inexistente,otra_palabra"
+
+echo -e "\n7.4 Mezcla de palabras existentes e inexistentes"
+./bash/ejercicio3/ejercicio3 -d ./bash/ejercicio3/in/caso_normal -p "USB,palabra_inexistente,Invalid,otra_palabra"
+
+# =================================================
+# 8. PRUEBAS DE ORDEN DE PARÁMETROS
+# =================================================
+echo -e "\n=== 8. PRUEBAS DE ORDEN DE PARÁMETROS ==="
+
+echo "8.1 Orden: -p palabras -d directorio"
+./bash/ejercicio3/ejercicio3 -p "USB,Invalid" -d ./bash/ejercicio3/in/caso_normal
+
+echo -e "\n8.2 Orden con nombres largos"
+./bash/ejercicio3/ejercicio3 --palabras "USB,Invalid" --directorio ./bash/ejercicio3/in/caso_normal
+
+echo -e "\n8.3 Orden mixto"
+./bash/ejercicio3/ejercicio3 --directorio ./bash/ejercicio3/in/caso_normal -p "USB,Invalid"
+
+# =================================================
+# 9. PRUEBAS CON RUTAS RELATIVAS Y ABSOLUTAS
+# =================================================
+echo -e "\n=== 9. PRUEBAS DE RUTAS ==="
+
+echo "9.1 Ruta relativa con ./"
+./bash/ejercicio3/ejercicio3 -d ./bash/ejercicio3/in/caso_normal -p "USB,Invalid"
+
+echo -e "\n9.2 Ruta relativa sin ./"
+./bash/ejercicio3/ejercicio3 -d bash/ejercicio3/in/caso_normal -p "USB,Invalid"
+
+echo -e "\n9.3 Ruta absoluta"
+./bash/ejercicio3/ejercicio3 -d /home/tfelice/dev/vh/APL/bash/ejercicio3/in/caso_normal -p "USB,Invalid"
+
+# =================================================
+# 10. PRUEBAS CON ARCHIVOS VACÍOS
+# =================================================
+echo -e "\n=== 10. PRUEBAS CON ARCHIVOS VACÍOS ==="
+
+echo "10.1 Archivo .log vacío"
+./bash/ejercicio3/ejercicio3 -d ./bash/ejercicio3/in/caso_vacio -p "USB,Invalid"
+
+# =================================================
+# 11. PRUEBAS DE PALABRAS CON ESPACIOS Y FORMATO
+# =================================================
+echo -e "\n=== 11. PRUEBAS DE FORMATO DE PALABRAS ==="
+
+echo "11.1 Palabras con espacios extra"
+./bash/ejercicio3/ejercicio3 -d ./bash/ejercicio3/in/caso_normal -p " USB , Invalid , error "
+
+echo -e "\n11.2 Palabras sin espacios después de comas"
+./bash/ejercicio3/ejercicio3 -d ./bash/ejercicio3/in/caso_normal -p "USB,Invalid,error"
+
+echo -e "\n11.3 Palabras con espacios inconsistentes"
+./bash/ejercicio3/ejercicio3 -d ./bash/ejercicio3/in/caso_normal -p "USB ,Invalid, error ,timeout"
+
+# =================================================
+# 12. PRUEBAS DE VERIFICACIÓN DE LIMPIEZA
+# =================================================
+echo -e "\n=== 12. PRUEBAS DE LIMPIEZA ==="
+
+echo "12.1 Verificar que no quedan archivos temporales"
+ls -la /tmp/ejercicio3.* 2>/dev/null || echo "OK: No hay archivos temporales pendientes"
+
+echo -e "\n12.2 Ejecutar múltiples veces para verificar limpieza"
+./bash/ejercicio3/ejercicio3 -d ./bash/ejercicio3/in/caso_normal -p "USB" > /dev/null
+./bash/ejercicio3/ejercicio3 -d ./bash/ejercicio3/in/caso_normal -p "Invalid" > /dev/null
+./bash/ejercicio3/ejercicio3 -d ./bash/ejercicio3/in/caso_normal -p "error" > /dev/null
+ls -la /tmp/ejercicio3.* 2>/dev/null || echo "OK: No hay archivos temporales después de múltiples ejecuciones"
+
+# =================================================
+# 13. PRUEBAS DE CONTENIDO COMPLETO
+# =================================================
+echo -e "\n=== 13. VERIFICACIÓN DE ARCHIVOS DE ENTRADA ==="
+
+echo "13.1 Listar todos los archivos .log creados"
+find ./bash/ejercicio3/in -name "*.log" -type f
+
+echo -e "\n13.2 Resumen de contenido por caso:"
+echo "--- Caso Normal ---"
+wc -l ./bash/ejercicio3/in/caso_normal/*.log
+
+echo -e "\n--- Caso Archivo Único ---"
+wc -l ./bash/ejercicio3/in/caso_archivo_unico/*.log
+
+echo -e "\n--- Caso Case Sensitive ---"
+wc -l ./bash/ejercicio3/in/caso_case_sensitive/*.log
+
+echo -e "\n--- Caso Vacío ---"
+wc -l ./bash/ejercicio3/in/caso_vacio/*.log
+
+echo -e "\n=== LOTE DE PRUEBAS COMPLETADO ==="
+
+# =================================================
+# COMANDOS DE EJEMPLO ADICIONALES
+# =================================================
+echo -e "\n=== EJEMPLOS ADICIONALES DE USO ==="
+echo "# Buscar errores en logs de sistema:"
+echo "# ./bash/ejercicio3/ejercicio3 -d ./bash/ejercicio3/in/caso_normal -p \"error,failed,exception\""
+echo ""
+echo "# Buscar intentos de conexión:"
+echo "# ./bash/ejercicio3/ejercicio3 -d ./bash/ejercicio3/in/caso_normal -p \"connection,connect,login\""
+echo ""
+echo "# Buscar eventos de hardware:"
+echo "# ./bash/ejercicio3/ejercicio3 -d ./bash/ejercicio3/in/caso_normal -p \"USB,device,kernel\""
