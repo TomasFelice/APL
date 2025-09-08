@@ -1,0 +1,4 @@
+Aug 23 10:30:01 test.local kernel: [300.123] usb 1-1: USB device connected.
+Aug 23 10:30:05 test.local sshd[9999]: invalid password for user admin.
+Aug 23 10:30:10 test.local kernel: [301.456] USB 2.0 hub detected.
+Aug 23 10:30:15 test.local login: INVALID login attempt from console.

@@ -1,0 +1,5 @@
+Aug 23 12:00:01 app.local java: OutOfMemoryError: Java heap space.
+Aug 23 12:00:05 app.local java: Exception in thread "main".
+Aug 23 12:00:10 app.local tomcat: Application startup failed.
+Aug 23 12:00:15 app.local java: NullPointerException at line 150.
+Aug 23 12:00:20 app.local tomcat: Connection pool exhausted.
