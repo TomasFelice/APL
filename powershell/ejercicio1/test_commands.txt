@@ -1,0 +1,185 @@
+# =================================================
+# LOTE DE PRUEBAS COMPLETO - EJERCICIO 1 POWERSHELL
+# =================================================
+# Ejecutar desde el directorio: /home/tfelice/dev/vh/APL
+# Cada comando debe ejecutarse desde la raíz del proyecto
+
+Write-Host "=== INICIANDO LOTE DE PRUEBAS EJERCICIO 1 POWERSHELL ==="
+
+# =================================================
+# 1. PRUEBAS DE AYUDA
+# =================================================
+Write-Host "=== 1. PRUEBAS DE AYUDA ==="
+
+Write-Host "1.1 Ayuda con -Help"
+./powershell/ejercicio1/ejercicio1.ps1 -Help
+
+Write-Host "`n1.2 Ayuda con -h"
+./powershell/ejercicio1/ejercicio1.ps1 -h
+
+# =================================================
+# 2. PRUEBAS DE PARÁMETROS INCORRECTOS
+# =================================================
+Write-Host "`n=== 2. PRUEBAS DE PARÁMETROS INCORRECTOS ==="
+
+Write-Host "2.1 Sin parámetros"
+./powershell/ejercicio1/ejercicio1.ps1
+
+Write-Host "`n2.2 Solo directorio sin salida"
+./powershell/ejercicio1/ejercicio1.ps1 -Directorio ./powershell/ejercicio1/in/caso_normal
+
+Write-Host "`n2.3 Conflicto -Archivo y -Pantalla juntos"
+./powershell/ejercicio1/ejercicio1.ps1 -Directorio ./powershell/ejercicio1/in/caso_normal -Archivo salida.json -Pantalla
+
+# =================================================
+# 3. PRUEBAS DE DIRECTORIO INEXISTENTE/INVÁLIDO
+# =================================================
+Write-Host "`n=== 3. PRUEBAS DE DIRECTORIO INEXISTENTE/INVÁLIDO ==="
+
+Write-Host "3.1 Directorio inexistente"
+./powershell/ejercicio1/ejercicio1.ps1 -Directorio /directorio/inexistente -Pantalla
+
+Write-Host "`n3.2 Directorio sin archivos .txt"
+./powershell/ejercicio1/ejercicio1.ps1 -Directorio ./powershell/ejercicio1/in/caso_vacio -Pantalla
+
+Write-Host "`n3.3 Archivo en lugar de directorio"
+./powershell/ejercicio1/ejercicio1.ps1 -Directorio ./powershell/ejercicio1/ejercicio1.ps1 -Pantalla
+
+# =================================================
+# 4. PRUEBAS DE RUTAS RELATIVAS Y ABSOLUTAS
+# =================================================
+Write-Host "`n=== 4. PRUEBAS DE RUTAS RELATIVAS Y ABSOLUTAS ==="
+
+Write-Host "4.1 Ruta relativa con ./"
+./powershell/ejercicio1/ejercicio1.ps1 -Directorio ./powershell/ejercicio1/in/caso_normal -Pantalla
+
+Write-Host "`n4.2 Ruta relativa sin ./"
+./powershell/ejercicio1/ejercicio1.ps1 -Directorio powershell/ejercicio1/in/caso_normal -Pantalla
+
+Write-Host "`n4.3 Ruta absoluta"
+./powershell/ejercicio1/ejercicio1.ps1 -Directorio /home/tfelice/dev/vh/APL/powershell/ejercicio1/in/caso_normal -Pantalla
+
+# =================================================
+# 5. PRUEBAS FUNCIONALES - CASOS NORMALES
+# =================================================
+Write-Host "`n=== 5. PRUEBAS FUNCIONALES - CASOS NORMALES ==="
+
+Write-Host "5.1 Caso normal - múltiples archivos, salida a pantalla"
+./powershell/ejercicio1/ejercicio1.ps1 -Directorio ./powershell/ejercicio1/in/caso_normal -Pantalla
+
+Write-Host "`n5.2 Caso normal - múltiples archivos, salida a archivo"
+./powershell/ejercicio1/ejercicio1.ps1 -Directorio ./powershell/ejercicio1/in/caso_normal -Archivo ./powershell/ejercicio1/out/caso_normal/resultado_completo.json
+
+Write-Host "`n5.3 Verificar archivo generado"
+Get-Content ./powershell/ejercicio1/out/caso_normal/resultado_completo.json
+
+# =================================================
+# 6. PRUEBAS CON ARCHIVO ÚNICO
+# =================================================
+Write-Host "`n=== 6. PRUEBAS CON ARCHIVO ÚNICO ==="
+
+Write-Host "6.1 Archivo único - datos mínimos"
+./powershell/ejercicio1/ejercicio1.ps1 -Directorio ./powershell/ejercicio1/in/caso_archivo_unico -Pantalla
+
+Write-Host "`n6.2 Archivo único - con aliases cortos"
+./powershell/ejercicio1/ejercicio1.ps1 -d ./powershell/ejercicio1/in/caso_archivo_unico -a ./powershell/ejercicio1/out/caso_archivo_unico/cambio_año.json
+
+Write-Host "`n6.3 Verificar archivo cambio año"
+Get-Content ./powershell/ejercicio1/out/caso_archivo_unico/cambio_año.json
+
+# =================================================
+# 7. PRUEBAS CON DATOS INVÁLIDOS
+# =================================================
+Write-Host "`n=== 7. PRUEBAS CON DATOS INVÁLIDOS ==="
+
+Write-Host "7.1 Archivos completamente vacíos"
+./powershell/ejercicio1/ejercicio1.ps1 -Directorio ./powershell/ejercicio1/in/caso_solo_vacios -Pantalla
+
+# =================================================
+# 8. PRUEBAS DE ORDEN DE PARÁMETROS
+# =================================================
+Write-Host "`n=== 8. PRUEBAS DE ORDEN DE PARÁMETROS ==="
+
+Write-Host "8.1 Orden: -Pantalla -Directorio"
+./powershell/ejercicio1/ejercicio1.ps1 -Pantalla -Directorio ./powershell/ejercicio1/in/caso_archivo_unico
+
+Write-Host "`n8.2 Orden: -Archivo archivo -Directorio directorio"
+./powershell/ejercicio1/ejercicio1.ps1 -Archivo ./powershell/ejercicio1/out/casos_especiales/orden_parametros.json -Directorio ./powershell/ejercicio1/in/caso_archivo_unico
+
+Write-Host "`n8.3 Usando aliases cortos"
+./powershell/ejercicio1/ejercicio1.ps1 -p -d ./powershell/ejercicio1/in/caso_archivo_unico
+
+# =================================================
+# 9. PRUEBAS DE ARCHIVOS DE SALIDA CON ERRORES
+# =================================================
+Write-Host "`n=== 9. PRUEBAS DE ARCHIVOS DE SALIDA CON ERRORES ==="
+
+Write-Host "9.1 Directorio de salida inexistente"
+./powershell/ejercicio1/ejercicio1.ps1 -Directorio ./powershell/ejercicio1/in/caso_archivo_unico -Archivo /directorio/inexistente/archivo.json
+
+Write-Host "`n9.2 Archivo sin permisos de escritura (simulado con ruta inválida)"
+./powershell/ejercicio1/ejercicio1.ps1 -Directorio ./powershell/ejercicio1/in/caso_archivo_unico -Archivo "/root/archivo_protegido.json"
+
+# =================================================
+# 10. PRUEBAS DE CASOS EDGE
+# =================================================
+Write-Host "`n=== 10. PRUEBAS DE CASOS EDGE ==="
+
+Write-Host "10.1 Directorio con archivos que no son .txt mezclados"
+Copy-Item ./powershell/ejercicio1/in/caso_archivo_unico/datos_minimos.txt ./powershell/ejercicio1/in/caso_archivo_unico/datos_minimos.bak
+./powershell/ejercicio1/ejercicio1.ps1 -Directorio ./powershell/ejercicio1/in/caso_archivo_unico -Pantalla
+Remove-Item ./powershell/ejercicio1/in/caso_archivo_unico/datos_minimos.bak -ErrorAction SilentlyContinue
+
+Write-Host "`n10.2 Procesamiento de datos históricos (múltiples años)"
+./powershell/ejercicio1/ejercicio1.ps1 -Directorio ./powershell/ejercicio1/in -Archivo ./powershell/ejercicio1/out/casos_especiales/datos_historicos.json
+
+Write-Host "`n10.3 Verificar datos históricos"
+Get-Content ./powershell/ejercicio1/out/casos_especiales/datos_historicos.json
+
+# =================================================
+# 11. PRUEBAS DE VERIFICACIÓN DE TIPOS POWERSHELL
+# =================================================
+Write-Host "`n=== 11. PRUEBAS ESPECÍFICAS DE POWERSHELL ==="
+
+Write-Host "11.1 Verificar que -Pantalla es un switch (no necesita valor)"
+./powershell/ejercicio1/ejercicio1.ps1 -Directorio ./powershell/ejercicio1/in/caso_archivo_unico -Pantalla
+
+Write-Host "`n11.2 Verificar parámetros con nombres completos"
+./powershell/ejercicio1/ejercicio1.ps1 -Directorio ./powershell/ejercicio1/in/caso_archivo_unico -Pantalla
+
+Write-Host "`n11.3 Verificar parámetros con aliases"
+./powershell/ejercicio1/ejercicio1.ps1 -d ./powershell/ejercicio1/in/caso_archivo_unico -p
+
+# =================================================
+# 12. PRUEBAS DE LIMPIEZA Y VERIFICACIÓN
+# =================================================
+Write-Host "`n=== 12. PRUEBAS DE LIMPIEZA Y VERIFICACIÓN ==="
+
+Write-Host "12.1 Verificar que no quedan archivos temporales"
+Get-ChildItem -Path $env:TEMP -Filter "tmp*" | Where-Object { $_.Name -like "*ejercicio1*" } | ForEach-Object { Write-Host "Archivo temporal encontrado: $($_.FullName)" }
+if (-not (Get-ChildItem -Path $env:TEMP -Filter "tmp*" | Where-Object { $_.Name -like "*ejercicio1*" })) {
+    Write-Host "OK: No hay archivos temporales pendientes"
+}
+
+Write-Host "`n12.2 Listar todos los archivos de salida generados"
+Get-ChildItem -Path ./powershell/ejercicio1/out -Filter "*.json" -Recurse
+
+Write-Host "`n=== LOTE DE PRUEBAS COMPLETADO ==="
+
+# =================================================
+# COMANDOS DE LIMPIEZA (OPCIONAL)
+# =================================================
+Write-Host "`n=== COMANDOS DE LIMPIEZA (OPCIONAL) ==="
+Write-Host "# Para limpiar archivos de salida generados:"
+Write-Host "# Remove-Item ./powershell/ejercicio1/out/caso_normal/*.json -Force"
+Write-Host "# Remove-Item ./powershell/ejercicio1/out/caso_archivo_unico/*.json -Force" 
+Write-Host "# Remove-Item ./powershell/ejercicio1/out/casos_especiales/*.json -Force"
+
+# =================================================
+# COMPARACIÓN CON VERSION BASH
+# =================================================
+Write-Host "`n=== COMPARACIÓN CON VERSIÓN BASH ==="
+Write-Host "# Para comparar resultados entre Bash y PowerShell:"
+Write-Host "# ./bash/ejercicio1/ejercicio1 -d ./bash/ejercicio1/in/caso_normal -p > bash_output.json"
+Write-Host "# ./powershell/ejercicio1/ejercicio1.ps1 -Directorio ./powershell/ejercicio1/in/caso_normal -Pantalla > ps_output.json"
+Write-Host "# Compare-Object (Get-Content bash_output.json) (Get-Content ps_output.json)"

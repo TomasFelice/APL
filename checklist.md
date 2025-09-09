@@ -62,15 +62,15 @@
 
 ### Bash
 
-- [ ] Encabezado con integrantes
-- [ ] Lote de pruebas
-- [ ] Muestra ayuda con `-h` y `--help`
-- [ ] Permite ingreso de parámetros en cualquier orden
-- [ ] Si recibe una ruta como parámetro → Acepta rutas relativas y absolutas
-- [ ] No permite ejecución si un parámetro obligatorio no está presente
-- [ ] Si un comando da error, lo maneja correctamente
-- [ ] Archivos temporales en `/tmp`, eliminados al finalizar (usar `trap`)
-- [ ] Utiliza funciones
+- [x] Encabezado con integrantes
+- [x] Lote de pruebas
+- [x] Muestra ayuda con `-h` y `--help`
+- [x] Permite ingreso de parámetros en cualquier orden
+- [x] Si recibe una ruta como parámetro → Acepta rutas relativas y absolutas
+- [x] No permite ejecución si un parámetro obligatorio no está presente
+- [x] Si un comando da error, lo maneja correctamente
+- [x] Archivos temporales en `/tmp`, eliminados al finalizar (usar `trap`)
+- [x] Utiliza funciones
 
 ### PowerShell
 
