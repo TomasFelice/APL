@@ -1,35 +1,59 @@
 # =================================================
-# LOTE DE PRUEBAS COMPLETO - EJERCICIO 1 POWERSHELL
+# LOTE DE PRUEBAS COMPLETO - EJERCICIO 1 POWERSHELL - VERSIÓN ACTUALIZADA
 # =================================================
 # Ejecutar desde el directorio: /home/tfelice/dev/vh/APL
 # Cada comando debe ejecutarse desde la raíz del proyecto
+# 
+# CAMBIOS en esta versión:
+# - Eliminada función Show-Help, se usa Get-Help nativo
+# - Parámetros obligatorios con ParameterSets
+# - Mejor manejo de archivos temporales en /tmp
+# - Estructura Begin/Process/End implementada
 
-Write-Host "=== INICIANDO LOTE DE PRUEBAS EJERCICIO 1 POWERSHELL ==="
-
-# =================================================
-# 1. PRUEBAS DE AYUDA
-# =================================================
-Write-Host "=== 1. PRUEBAS DE AYUDA ==="
-
-Write-Host "1.1 Ayuda con -Help"
-./powershell/ejercicio1/ejercicio1.ps1 -Help
-
-Write-Host "`n1.2 Ayuda con -h"
-./powershell/ejercicio1/ejercicio1.ps1 -h
+Write-Host "=== INICIANDO LOTE DE PRUEBAS EJERCICIO 1 POWERSHELL (ACTUALIZADO) ==="
 
 # =================================================
-# 2. PRUEBAS DE PARÁMETROS INCORRECTOS
+# 1. PRUEBAS DE AYUDA (Get-Help nativo)
 # =================================================
-Write-Host "`n=== 2. PRUEBAS DE PARÁMETROS INCORRECTOS ==="
+Write-Host "=== 1. PRUEBAS DE AYUDA (Get-Help nativo) ==="
 
-Write-Host "2.1 Sin parámetros"
-./powershell/ejercicio1/ejercicio1.ps1
+Write-Host "1.1 Ayuda básica con Get-Help"
+Get-Help ./powershell/ejercicio1/ejercicio1.ps1
 
-Write-Host "`n2.2 Solo directorio sin salida"
-./powershell/ejercicio1/ejercicio1.ps1 -Directorio ./powershell/ejercicio1/in/caso_normal
+Write-Host "`n1.2 Ayuda con ejemplos"
+Get-Help ./powershell/ejercicio1/ejercicio1.ps1 -Examples
 
-Write-Host "`n2.3 Conflicto -Archivo y -Pantalla juntos"
+Write-Host "`n1.3 Ayuda detallada"
+Get-Help ./powershell/ejercicio1/ejercicio1.ps1 -Detailed
+
+Write-Host "`n1.4 Ayuda completa"
+Get-Help ./powershell/ejercicio1/ejercicio1.ps1 -Full
+
+# =================================================
+# 2. PRUEBAS DE PARÁMETROS OBLIGATORIOS Y ParameterSets
+# =================================================
+Write-Host "`n=== 2. PRUEBAS DE PARÁMETROS OBLIGATORIOS Y ParameterSets ==="
+
+Write-Host "2.1 Sin parámetros - debe solicitar parámetros obligatorios"
+Write-Host "NOTA: El script solicitará interactivamente los parámetros faltantes"
+# Simular entrada vacía para evitar bloqueo:
+echo "" | ./powershell/ejercicio1/ejercicio1.ps1
+
+Write-Host "`n2.2 Solo directorio sin especificar salida"
+Write-Host "NOTA: Debe fallar porque falta especificar -Archivo o -Pantalla"
+echo "" | ./powershell/ejercicio1/ejercicio1.ps1 -Directorio ./powershell/ejercicio1/in/caso_normal
+
+Write-Host "`n2.3 Conflicto de ParameterSets - -Archivo y -Pantalla juntos"
 ./powershell/ejercicio1/ejercicio1.ps1 -Directorio ./powershell/ejercicio1/in/caso_normal -Archivo salida.json -Pantalla
+
+Write-Host "`n2.4 Directorio vacío (validación NotNullOrEmpty)"
+./powershell/ejercicio1/ejercicio1.ps1 -Directorio "" -Pantalla
+
+Write-Host "`n2.5 ParameterSet ArchivoSet válido"
+./powershell/ejercicio1/ejercicio1.ps1 -Directorio ./powershell/ejercicio1/in/caso_archivo_unico -Archivo ./powershell/ejercicio1/out/test_parameterset.json
+
+Write-Host "`n2.6 ParameterSet PantallaSet válido"
+./powershell/ejercicio1/ejercicio1.ps1 -Directorio ./powershell/ejercicio1/in/caso_archivo_unico -Pantalla
 
 # =================================================
 # 3. PRUEBAS DE DIRECTORIO INEXISTENTE/INVÁLIDO
@@ -73,57 +97,83 @@ Write-Host "`n5.2 Caso normal - múltiples archivos, salida a archivo"
 Write-Host "`n5.3 Verificar archivo generado"
 Get-Content ./powershell/ejercicio1/out/caso_normal/resultado_completo.json
 
-# =================================================
-# 6. PRUEBAS CON ARCHIVO ÚNICO
-# =================================================
-Write-Host "`n=== 6. PRUEBAS CON ARCHIVO ÚNICO ==="
+Write-Host "`n5.4 Prueba con -Verbose para ver archivos temporales"
+./powershell/ejercicio1/ejercicio1.ps1 -Directorio ./powershell/ejercicio1/in/caso_normal -Pantalla -Verbose
 
-Write-Host "6.1 Archivo único - datos mínimos"
+# =================================================
+# 6. PRUEBAS DE ARCHIVOS TEMPORALES Y CLEANUP
+# =================================================
+Write-Host "`n=== 6. PRUEBAS DE ARCHIVOS TEMPORALES Y CLEANUP ==="
+
+Write-Host "6.1 Verificar archivos temporales durante ejecución"
+Write-Host "Contar archivos temp antes:"
+find /tmp -name "*canal*" -o -name "*ejercicio1*" 2>/dev/null | wc -l
+Write-Host "Ejecutar con -Verbose para ver archivos temporales:"
+./powershell/ejercicio1/ejercicio1.ps1 -Directorio ./powershell/ejercicio1/in/caso_normal -Pantalla -Verbose
+Write-Host "Contar archivos temp después (deben eliminarse):"
+sleep 1
+find /tmp -name "*canal*" -o -name "*ejercicio1*" 2>/dev/null | wc -l
+
+Write-Host "`n6.2 Verificar cleanup en caso de error"
+Write-Host "NOTA: Los archivos temporales deben eliminarse incluso con errores"
+./powershell/ejercicio1/ejercicio1.ps1 -Directorio ./powershell/ejercicio1/in/caso_datos_invalidos -Pantalla -Verbose
+sleep 1
+find /tmp -name "*canal*" -o -name "*ejercicio1*" 2>/dev/null | wc -l
+
+# =================================================
+# 7. PRUEBAS CON ARCHIVO ÚNICO
+# =================================================
+Write-Host "`n=== 7. PRUEBAS CON ARCHIVO ÚNICO ==="
+
+Write-Host "7.1 Archivo único - datos mínimos"
 ./powershell/ejercicio1/ejercicio1.ps1 -Directorio ./powershell/ejercicio1/in/caso_archivo_unico -Pantalla
 
-Write-Host "`n6.2 Archivo único - con aliases cortos"
+Write-Host "`n7.2 Archivo único - con aliases cortos"
 ./powershell/ejercicio1/ejercicio1.ps1 -d ./powershell/ejercicio1/in/caso_archivo_unico -a ./powershell/ejercicio1/out/caso_archivo_unico/cambio_año.json
 
-Write-Host "`n6.3 Verificar archivo cambio año"
+Write-Host "`n7.3 Verificar archivo cambio año"
 Get-Content ./powershell/ejercicio1/out/caso_archivo_unico/cambio_año.json
 
 # =================================================
-# 7. PRUEBAS CON DATOS INVÁLIDOS
+# 8. PRUEBAS CON DATOS INVÁLIDOS
 # =================================================
-Write-Host "`n=== 7. PRUEBAS CON DATOS INVÁLIDOS ==="
+Write-Host "`n=== 8. PRUEBAS CON DATOS INVÁLIDOS ==="
 
-Write-Host "7.1 Archivos completamente vacíos"
+Write-Host "8.1 Archivos completamente vacíos"
 ./powershell/ejercicio1/ejercicio1.ps1 -Directorio ./powershell/ejercicio1/in/caso_solo_vacios -Pantalla
 
-# =================================================
-# 8. PRUEBAS DE ORDEN DE PARÁMETROS
-# =================================================
-Write-Host "`n=== 8. PRUEBAS DE ORDEN DE PARÁMETROS ==="
+Write-Host "`n8.2 Archivos con formato incorrecto"
+./powershell/ejercicio1/ejercicio1.ps1 -Directorio ./powershell/ejercicio1/in/caso_datos_invalidos -Pantalla
 
-Write-Host "8.1 Orden: -Pantalla -Directorio"
+# =================================================
+# 9. PRUEBAS DE ORDEN DE PARÁMETROS
+# =================================================
+Write-Host "`n=== 9. PRUEBAS DE ORDEN DE PARÁMETROS ==="
+
+Write-Host "9.1 Orden: -Pantalla -Directorio"
 ./powershell/ejercicio1/ejercicio1.ps1 -Pantalla -Directorio ./powershell/ejercicio1/in/caso_archivo_unico
 
-Write-Host "`n8.2 Orden: -Archivo archivo -Directorio directorio"
+Write-Host "`n9.2 Orden: -Archivo archivo -Directorio directorio"
 ./powershell/ejercicio1/ejercicio1.ps1 -Archivo ./powershell/ejercicio1/out/casos_especiales/orden_parametros.json -Directorio ./powershell/ejercicio1/in/caso_archivo_unico
 
-Write-Host "`n8.3 Usando aliases cortos"
+Write-Host "`n9.3 Usando aliases cortos"
 ./powershell/ejercicio1/ejercicio1.ps1 -p -d ./powershell/ejercicio1/in/caso_archivo_unico
 
 # =================================================
-# 9. PRUEBAS DE ARCHIVOS DE SALIDA CON ERRORES
+# 10. PRUEBAS DE ARCHIVOS DE SALIDA CON ERRORES
 # =================================================
-Write-Host "`n=== 9. PRUEBAS DE ARCHIVOS DE SALIDA CON ERRORES ==="
+Write-Host "`n=== 10. PRUEBAS DE ARCHIVOS DE SALIDA CON ERRORES ==="
 
-Write-Host "9.1 Directorio de salida inexistente"
+Write-Host "10.1 Directorio de salida inexistente"
 ./powershell/ejercicio1/ejercicio1.ps1 -Directorio ./powershell/ejercicio1/in/caso_archivo_unico -Archivo /directorio/inexistente/archivo.json
 
-Write-Host "`n9.2 Archivo sin permisos de escritura (simulado con ruta inválida)"
+Write-Host "`n10.2 Archivo sin permisos de escritura (simulado con ruta inválida)"
 ./powershell/ejercicio1/ejercicio1.ps1 -Directorio ./powershell/ejercicio1/in/caso_archivo_unico -Archivo "/root/archivo_protegido.json"
 
 # =================================================
-# 10. PRUEBAS DE CASOS EDGE
+# 11. PRUEBAS DE CASOS EDGE
 # =================================================
-Write-Host "`n=== 10. PRUEBAS DE CASOS EDGE ==="
+Write-Host "`n=== 11. PRUEBAS DE CASOS EDGE ==="
 
 Write-Host "10.1 Directorio con archivos que no son .txt mezclados"
 Copy-Item ./powershell/ejercicio1/in/caso_archivo_unico/datos_minimos.txt ./powershell/ejercicio1/in/caso_archivo_unico/datos_minimos.bak
