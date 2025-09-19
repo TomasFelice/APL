@@ -1,0 +1,108 @@
+# =================================================
+# COMANDOS DE PRUEBA MANUAL - EJERCICIO 3 POWERSHELL
+# Integrantes:
+# - Felice, Tomas Agustin
+# - Casas, Lautaro Nahuel  
+# - Coarite Coarite, Ivan Enrique
+# =================================================
+
+# NOTA: Ejecutar desde el directorio base del proyecto (/home/tfelice/dev/vh/APL)
+
+# ===========================
+# PRUEBAS BÁSICAS
+# ===========================
+
+# Ejemplo de la consigna (debe mostrar USB: 2, Invalid: 2)
+pwsh ./powershell/ejercicio3/ejercicio3.ps1 -Directorio "./powershell/ejercicio3/in/caso_normal" -Palabras "USB,Invalid"
+
+# Case-insensitive con minúsculas (debe mostrar conteos correctos)
+pwsh ./powershell/ejercicio3/ejercicio3.ps1 -d "./powershell/ejercicio3/in/caso_case_sensitive" -p "usb,invalid,error"
+
+# Case-insensitive con mayúsculas
+pwsh ./powershell/ejercicio3/ejercicio3.ps1 -d "./powershell/ejercicio3/in/caso_case_sensitive" -p "USB,INVALID,ERROR"
+
+# Una sola palabra
+pwsh ./powershell/ejercicio3/ejercicio3.ps1 -d "./powershell/ejercicio3/in/caso_normal" -p "kernel"
+
+# ===========================
+# PRUEBAS DE AYUDA
+# ===========================
+
+# Mostrar ayuda integrada de PowerShell
+Get-Help ./powershell/ejercicio3/ejercicio3.ps1
+
+# Ayuda detallada
+Get-Help ./powershell/ejercicio3/ejercicio3.ps1 -Full
+
+# Solo ejemplos
+Get-Help ./powershell/ejercicio3/ejercicio3.ps1 -Examples
+
+# ===========================
+# PRUEBAS DE VALIDACIÓN
+# ===========================
+
+# Sin parámetros (debe fallar con validación automática de PowerShell)
+pwsh ./powershell/ejercicio3/ejercicio3.ps1
+
+# Solo directorio, sin palabras (debe fallar)
+pwsh ./powershell/ejercicio3/ejercicio3.ps1 -d "./powershell/ejercicio3/in/caso_normal"
+
+# Solo palabras, sin directorio (debe fallar)
+pwsh ./powershell/ejercicio3/ejercicio3.ps1 -p "test,word"
+
+# Directorio inexistente (debe fallar)
+pwsh ./powershell/ejercicio3/ejercicio3.ps1 -d "./directorio_inexistente" -p "test"
+
+# Directorio sin archivos .log (debe fallar)
+pwsh ./powershell/ejercicio3/ejercicio3.ps1 -d "./powershell/ejercicio3/in/caso_sin_logs" -p "test"
+
+# ===========================
+# PRUEBAS DE CASOS ESPECIALES
+# ===========================
+
+# Archivo vacío (debe mostrar conteos en 0)
+pwsh ./powershell/ejercicio3/ejercicio3.ps1 -d "./powershell/ejercicio3/in/caso_vacio" -p "test,word"
+
+# Archivo único
+pwsh ./powershell/ejercicio3/ejercicio3.ps1 -d "./powershell/ejercicio3/in/caso_archivo_unico" -p "test"
+
+# Palabras que no existen (debe mostrar conteos en 0)
+pwsh ./powershell/ejercicio3/ejercicio3.ps1 -d "./powershell/ejercicio3/in/caso_normal" -p "palabra_inexistente,otra_palabra"
+
+# Mezcla de palabras existentes e inexistentes
+pwsh ./powershell/ejercicio3/ejercicio3.ps1 -d "./powershell/ejercicio3/in/caso_normal" -p "USB,inexistente,Invalid"
+
+# ===========================
+# PRUEBAS DE RUTAS
+# ===========================
+
+# Ruta relativa (ya probada arriba)
+pwsh ./powershell/ejercicio3/ejercicio3.ps1 -d "./powershell/ejercicio3/in/caso_normal" -p "USB"
+
+# Ruta absoluta (ajustar según el sistema)
+pwsh ./powershell/ejercicio3/ejercicio3.ps1 -d "/home/tfelice/dev/vh/APL/powershell/ejercicio3/in/caso_normal" -p "USB"
+
+# ===========================
+# PRUEBAS ADICIONALES DE POWERSHELL
+# ===========================
+
+# Usando parámetros por posición
+pwsh ./powershell/ejercicio3/ejercicio3.ps1 "./powershell/ejercicio3/in/caso_normal" "USB,Invalid"
+
+# Mezclando parámetros con nombre y alias
+pwsh ./powershell/ejercicio3/ejercicio3.ps1 -Directorio "./powershell/ejercicio3/in/caso_normal" -p "USB"
+
+# ===========================
+# COMANDOS DE VERIFICACIÓN
+# ===========================
+
+# Verificar que los archivos de prueba existen
+Test-Path ./powershell/ejercicio3/in/caso_normal/system.log
+Test-Path ./powershell/ejercicio3/in/caso_case_sensitive/mixed_case.log
+
+# Ver contenido de archivos de prueba
+Get-Content ./powershell/ejercicio3/in/caso_normal/system.log
+Get-Content ./powershell/ejercicio3/in/caso_case_sensitive/mixed_case.log
+
+# Listar archivos .log disponibles
+Get-ChildItem ./powershell/ejercicio3/in -Recurse -Filter "*.log"
