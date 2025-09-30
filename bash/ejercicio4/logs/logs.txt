@@ -1,0 +1,7 @@
+[2025-09-17 23:09:53] Info: usando rama local para monitoreo: 'main'
+[2025-09-17 23:10:49] Alerta: patrón 'password' encontrado en el archivo 'clave.js' -> 2:password=123456;
+[2025-09-17 23:10:49] Alerta: patrón 'API_KEY' encontrado en el archivo 'clave.js' -> 1:const API_KEY = "fer123"
+[2025-09-17 23:10:49] Alerta: patrón_regex '^.*API_KEY\s*=\s*['"].*['"].*$' encontrado en el archivo 'clave.js' -> 1:const API_KEY = "fer123"
+[2025-09-17 23:12:24] Info: usando rama local para monitoreo: 'main'
+[2025-09-17 23:25:19] Info: usando rama local para monitoreo: 'main'
+[2025-09-17 23:25:38] Alerta: patrón 'API_KEY' encontrado en el archivo 'contra.yaml' -> 1:API_KEY=claveloide

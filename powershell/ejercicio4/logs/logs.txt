@@ -1,0 +1,4 @@
+[2025-09-24 19:37:19] Info: usando rama local para monitoreo: 'HEAD'
+[2025-09-24 19:39:59] Info: usando rama local para monitoreo: 'HEAD'
+[2025-09-24 19:42:25] Info: usando rama local para monitoreo: 'main'
+[2025-09-24 19:42:35] Alerta: patrón 'API_KEY' encontrado en el archivo 'vars.js' -> 1:const API_KEY = 1234;

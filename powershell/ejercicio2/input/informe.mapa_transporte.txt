@@ -1,0 +1,14 @@
+----
+Origen: 1
+Destino 2: tiempo minimo = 3,
+Rutas (todas las rutas con tiempo minimo):
+  1
+  2
+
+----
+Origen: 2
+Destino 1: tiempo minimo = 3,
+Rutas (todas las rutas con tiempo minimo):
+  2
+  1
+
