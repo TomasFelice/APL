@@ -1,13 +1,10 @@
-<#
-.SYNOPSIS
-  Demonio que monitorea un repositorio Git local buscando patrones sensibles (PowerShell).
+# =================================================
+# Integrantes:
+# - Casas, Lautaro Nahuel
+# - Coarite Coarite, Ivan Enrique
+# - Felice, Tomas Agustin
+# =================================================
 
-.NOTES
-  - Funciona en PowerShell 5+ y PowerShell Core.
-  - Este script NO ejecuta 'git fetch' y monitorea la rama local (HEAD).
-  - Uso: .\audit.ps1 -Repo "C:\ruta\repo" -Configuracion "C:\ruta\patrones.conf" -Log "C:\ruta\alerts.log" -Alerta 10
-  - Para detener: .\audit.ps1 -Repo "C:\ruta\repo" -Kill
-#>
 
 [CmdletBinding()]
 param(

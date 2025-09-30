@@ -1,15 +1,10 @@
-<#
-.SYNOPSIS
-  Analiza una matriz de adyacencia (tiempos) para detectar hub o caminos mínimos (Dijkstra).
-.PARAMETER Matriz
-  Ruta al archivo de la matriz (obligatorio).
-.PARAMETER Hub
-  Indica modo hub (mutuamente excluyente con Camino).
-.PARAMETER Camino
-  Indica modo camino (mutuamente excluyente con Hub).
-.PARAMETER Separador
-  Separador de columnas (por defecto '|').
-#>
+# =================================================
+# Integrantes:
+# - Casas, Lautaro Nahuel
+# - Coarite Coarite, Ivan Enrique
+# - Felice, Tomas Agustin
+# =================================================
+
 
 param(
   [Parameter(Mandatory=$true, Position=0)]
@@ -18,9 +13,70 @@ param(
   [switch]$Hub,
 
   [switch]$Camino,
+  [switch]$Help,
 
   [string]$Separador = "|"
 )
+
+function Show-Help {
+  @"
+Uso:
+  -m|--matriz <archivo> (-h|--hub | -c|--camino) [-s|--separador <caracter>]
+
+Opciones:
+  -matriz     Ruta del archivo de la matriz de adyacencia (obligatorio).
+  -hub        Determina qué estación(es) es/son hub. No combinable con -c.
+  -camino     Encuentra el/los camino(s) más corto(s) en tiempo. No combinable con -h.
+  -separador  Separador de columnas (por defecto: | ).
+"@
+}
+
+if ($Help) { Show-Help; exit 0 }
+
+# Helper: formatear tiempo como en la versión anterior
+function Format-Time {
+  param([double]$x)
+  if ($x -eq [double]::PositiveInfinity) { return "INF" }
+  $s = "{0:F6}" -f $x
+  $s = $s.TrimEnd('0')
+  if ($s.EndsWith('.')) { $s = $s.TrimEnd('.') }
+  if ($s -eq "") { $s = "0" }
+  return $s
+}
+
+# Función para reconstruir todas las rutas (usa predSaved[sKey][tKey] = ArrayList 1-based)
+function Get-AllPaths {
+  param(
+    [int]$s,
+    [int]$t,
+    [hashtable]$predForSource
+  )
+  $results = New-Object System.Collections.ArrayList
+
+  function _dfs {
+    param([int]$current, [System.Collections.ArrayList]$stack)
+    if ($current -eq $s) {
+      $path = New-Object System.Collections.ArrayList
+      $path.Add($s) | Out-Null
+      for ($ii = $stack.Count - 1; $ii -ge 0; $ii--) { $path.Add($stack[$ii]) | Out-Null }
+      $results.Add($path) | Out-Null
+      return
+    }
+    if (-not $predForSource.ContainsKey($current.ToString())) { return }
+    $preds = $predForSource[$current.ToString()]
+    if ($null -eq $preds) { return }
+    foreach ($p in $preds) {
+      $stack.Add($current) | Out-Null
+      _dfs -current $p -stack $stack
+      $stack.RemoveAt($stack.Count - 1) | Out-Null
+    }
+  }
+
+  $stack0 = New-Object System.Collections.ArrayList
+  _dfs -current $t -stack $stack0
+  return ,$results
+}
+
 
 # --- Validaciones de parámetros ---
 if (($Hub -and $Camino) -or (-not $Hub -and -not $Camino)) {
@@ -107,17 +163,6 @@ for ($i = 0; $i -lt $n; $i++) {
       exit 11
     }
   }
-}
-
-# Helper: formatear tiempo como en la versión anterior
-function Format-Time {
-  param([double]$x)
-  if ($x -eq [double]::PositiveInfinity) { return "INF" }
-  $s = "{0:F6}" -f $x
-  $s = $s.TrimEnd('0')
-  if ($s.EndsWith('.')) { $s = $s.TrimEnd('.') }
-  if ($s -eq "") { $s = "0" }
-  return $s
 }
 
 # --- MODO HUB ---
@@ -234,38 +279,6 @@ if ($globalMin -eq [double]::PositiveInfinity) {
   exit 0
 }
 
-# Función para reconstruir todas las rutas (usa predSaved[sKey][tKey] = ArrayList 1-based)
-function Get-AllPaths {
-  param(
-    [int]$s,
-    [int]$t,
-    [hashtable]$predForSource
-  )
-  $results = New-Object System.Collections.ArrayList
-
-  function _dfs {
-    param([int]$current, [System.Collections.ArrayList]$stack)
-    if ($current -eq $s) {
-      $path = New-Object System.Collections.ArrayList
-      $path.Add($s) | Out-Null
-      for ($ii = $stack.Count - 1; $ii -ge 0; $ii--) { $path.Add($stack[$ii]) | Out-Null }
-      $results.Add($path) | Out-Null
-      return
-    }
-    if (-not $predForSource.ContainsKey($current.ToString())) { return }
-    $preds = $predForSource[$current.ToString()]
-    if ($null -eq $preds) { return }
-    foreach ($p in $preds) {
-      $stack.Add($current) | Out-Null
-      _dfs -current $p -stack $stack
-      $stack.RemoveAt($stack.Count - 1) | Out-Null
-    }
-  }
-
-  $stack0 = New-Object System.Collections.ArrayList
-  _dfs -current $t -stack $stack0
-  return ,$results
-}
 
 # Imprimir únicamente pares cuyo tiempo mínimo == globalMin
 $outLines = New-Object System.Collections.ArrayList
