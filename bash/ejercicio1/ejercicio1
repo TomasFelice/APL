@@ -202,6 +202,15 @@ if [[ "$PANTALLA" = TRUE ]]; then
         exit 1
     fi
 else
+    # Crear directorio de salida si no existe
+    DIRECTORIO_SALIDA=$(dirname "$ARCHIVO_SALIDA")
+    if [[ ! -d "$DIRECTORIO_SALIDA" ]]; then
+        if ! mkdir -p "$DIRECTORIO_SALIDA"; then
+            echo "Error: No se pudo crear el directorio '$DIRECTORIO_SALIDA'" >&2
+            exit 1
+        fi
+    fi
+    
     if ! cp "$TEMP_FILE" "$ARCHIVO_SALIDA"; then
         echo "Error: No se pudo escribir en el archivo '$ARCHIVO_SALIDA'" >&2
         exit 1

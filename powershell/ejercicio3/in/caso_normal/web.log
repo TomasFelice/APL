@@ -1,0 +1,5 @@
+Aug 23 11:00:01 web.local apache2: [error] Failed to connect to database.
+Aug 23 11:00:05 web.local apache2: [warn] Invalid configuration detected.
+Aug 23 11:00:10 web.local nginx: [info] Server started successfully.
+Aug 23 11:00:15 web.local mysql: [error] Connection timeout.
+Aug 23 11:00:20 web.local apache2: [error] Invalid request format.

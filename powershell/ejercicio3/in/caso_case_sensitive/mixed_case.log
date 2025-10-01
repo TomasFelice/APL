@@ -1,0 +1,4 @@
+Aug 23 13:00:01 test.local process: USB USB USB device detected three times.
+Aug 23 13:00:05 test.local process: Invalid invalid INVALID case test.
+Aug 23 13:00:10 test.local process: Error ERROR error mixed case.
+Aug 23 13:00:15 test.local process: Warning warn WARN different cases.
