@@ -89,9 +89,21 @@ if (-not (Test-Path -Path $Matriz -PathType Leaf)) {
   exit 2
 }
 
-$basedir = Split-Path -Parent $Matriz
+$inputdir = Split-Path -Parent $Matriz
 $leaf = Split-Path -Leaf $Matriz
-$outfile = Join-Path $basedir ("informe.$leaf")
+# Si inputdir es relativo (ej: "input"), usar el directorio actual
+if ([System.IO.Path]::IsPathRooted($inputdir)) {
+  $rootdir = Split-Path -Parent $inputdir
+} else {
+  $rootdir = Get-Location
+}
+$outdir = Join-Path $rootdir "output"
+$outfile = Join-Path $outdir ("informe.$leaf")
+
+# Crear carpeta output si no existe
+if (-not (Test-Path -Path $outdir -PathType Container)) {
+  New-Item -Path $outdir -ItemType Directory -Force | Out-Null
+}
 
 # Constantes
 $eps = 1e-9
