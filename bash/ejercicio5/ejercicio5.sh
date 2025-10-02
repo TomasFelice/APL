@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # =================================================
 # Integrantes:
 # - Felice, Tomas Agustin
@@ -35,6 +35,63 @@ handle_error(){
     exit "$2"
 }
 
+verificar_dependencias(){
+    local dependencias_faltantes=()
+    
+    # Verificar curl
+    if ! command -v curl &> /dev/null; then
+        dependencias_faltantes+=("curl")
+    fi
+    
+    # Verificar jq
+    if ! command -v jq &> /dev/null; then
+        dependencias_faltantes+=("jq")
+    fi
+    
+    if [ ${#dependencias_faltantes[@]} -gt 0 ]; then
+        echo -e "${ROJO}Las siguientes herramientas no están disponibles: ${dependencias_faltantes[*]}${RESET}"
+        echo "Use el gestor de paquetes de su sistema para instalarlas:"
+        
+        for dep in "${dependencias_faltantes[@]}"; do
+            case "$dep" in
+                "jq")
+                    echo -e "  • ${VERDE}Debian/Ubuntu:${RESET} sudo apt-get install jq"
+                    echo -e "  • ${VERDE}Fedora/RHEL:${RESET} sudo dnf install jq"
+                    echo -e "  • ${VERDE}CentOS:${RESET} sudo yum install jq"
+                    echo -e "  • ${VERDE}Arch Linux:${RESET} sudo pacman -S jq"
+                    echo -e "  • ${VERDE}macOS:${RESET} brew install jq"
+                    ;;
+                "curl")
+                    echo -e "  • ${VERDE}Debian/Ubuntu:${RESET} sudo apt-get install curl"
+                    echo -e "  • ${VERDE}Fedora/RHEL:${RESET} sudo dnf install curl"
+                    echo -e "  • ${VERDE}CentOS:${RESET} sudo yum install curl"
+                    echo -e "  • ${VERDE}Arch Linux:${RESET} sudo pacman -S curl"
+                    echo -e "  • ${VERDE}macOS:${RESET} curl ya está instalado por defecto"
+                    ;;
+            esac
+        done
+        
+        handle_error "${ROJO}Dependencias faltantes: ${dependencias_faltantes[*]}${RESET}" $E_COMANDO_JQ
+    fi
+}
+
+verificar_sistema(){
+    # Detectar el sistema operativo
+    local os_type=""
+    if [[ "$OSTYPE" == "linux-gnu"* ]]; then
+        os_type="Linux"
+    elif [[ "$OSTYPE" == "darwin"* ]]; then
+        os_type="macOS"
+    elif [[ "$OSTYPE" == "cygwin" ]] || [[ "$OSTYPE" == "msys" ]]; then
+        os_type="Windows"
+    fi
+    
+    # Verificar si estamos en un entorno que requiere atención especial
+    if [[ "$os_type" == "Windows" ]]; then
+        echo -e "${AMARILLO}Detectado entorno Windows. Asegúrese de usar terminaciones de línea Unix.${RESET}"
+    fi
+}
+
 mostrar_pais(){
     infoPais=$1
     infoMoneda=$2
@@ -52,13 +109,28 @@ get_pais_web(){
     local urlPais="${urlBase}/$(echo "${nomPais}" | sed 's/ /%20/g')"
     local encontrado=0
 
-    http_code=$(curl -s -o "${FILE_RESPONSE_TMP}" -w "%{http_code}" "${urlPais}")
+    http_code=$(curl --connect-timeout 10 --max-time 30 -s -o "${FILE_RESPONSE_TMP}" -w "%{http_code}" "${urlPais}")
     echo "---Buscando informacion desde la web: ${nomPais}"
     echo "---Realizando peticion: ${nomPais}"
     if [[ "${http_code}" != "200" ]]; then
         echo -e "${AMARILLO}---Error de peticion: Cod. ${http_code}${RESET}" >&2
-        [[ $http_code -ne "404" ]] || echo -e "${AMARILLO}---Informacion no disponible en el servidor.${AMARILLO}"
-        [[ $http_code -ne "000" ]] || echo -e "${ROJO}---Sin conexion a internet."
+        case "$http_code" in
+            "404")
+                echo -e "${AMARILLO}---Informacion no disponible en el servidor.${RESET}"
+                ;;
+            "000")
+                echo -e "${ROJO}---Sin conexion a internet o servidor no disponible.${RESET}"
+                ;;
+            "403")
+                echo -e "${ROJO}---Acceso denegado al servidor.${RESET}"
+                ;;
+            "500"|"502"|"503")
+                echo -e "${ROJO}---Error interno del servidor. Intente mas tarde.${RESET}"
+                ;;
+            *)
+                echo -e "${ROJO}---Error de conexion desconocido.${RESET}"
+                ;;
+        esac
         encontrado=1
         return "${encontrado}"
     fi
@@ -180,14 +252,9 @@ if [ "${nombre}" = "" ]; then
 fi
 
 ##INICIO MAIN BLOCK
-if ! command -v jq &> /dev/null ; then
-    echo -e "${ROJO}La herramienta jq no esta disponible.${RESET}."
-    echo "Use el gestor de paquetes de su sistema para descargar jq."
-    echo -e "Debian/Ubuntu: ejecute ${VERDE}sudo apt-get install jq${RESET}."
-    echo -e "Fedora: ejecute ${VERDE}sudo dnf install jq${RESET}."
-    echo "Otros sistemas: Consulte la documentacion de su gestor de paquete de su sistema."
-    handle_error "${ROJO}jq no disponible${RESET}" $E_COMANDO_JQ
-fi
+# Verificar sistema y dependencias
+verificar_sistema
+verificar_dependencias
 
 #Inicializar variables
 
@@ -200,19 +267,28 @@ listPaisesObt=()
 listMonedasObt=()
 
 if [[ ! -d "${dirCache}" ]]; then
-    mkdir "${dirCache}" || handle_error "Directorio no creado." $E_ARCH_NO_CREADO
+    mkdir -p "${dirCache}" || handle_error "Error al crear directorio de cache: ${dirCache}" $E_ARCH_NO_CREADO
+    chmod 755 "${dirCache}"
 fi
 
 if [[ ! -d "${dirPapelera}" ]]; then
-    mkdir "${dirPapelera}" || handle_error "Directorio no creado." $E_ARCH_NO_CREADO
+    mkdir -p "${dirPapelera}" || handle_error "Error al crear directorio de papelera: ${dirPapelera}" $E_ARCH_NO_CREADO
+    chmod 755 "${dirPapelera}"
 fi
 paisesVal=()
 for item in "${paises[@]}"
 do
-    if [[ "${item}" =~ ^.{4,} ]]; then
+    # Validar que el nombre del país no esté vacío y tenga al menos 2 caracteres
+    if [[ -n "${item}" && "${item}" =~ ^[a-zA-Z\ ]{2,}$ ]]; then
         paisesVal+=("${item}")
+    else
+        echo -e "${AMARILLO}Advertencia: '${item}' no es un nombre de país válido (debe tener al menos 2 letras).${RESET}"
     fi
 done
+
+if [ ${#paisesVal[@]} -eq 0 ]; then
+    handle_error "${ROJO}No se proporcionaron nombres de países válidos.${RESET}" $E_ARGS
+fi
 
 
 for paisItem in "${paisesVal[@]}"
