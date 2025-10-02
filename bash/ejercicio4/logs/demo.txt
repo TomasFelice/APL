@@ -1,0 +1,6 @@
+[2025-10-02 02:41:41] Info: usando rama local para monitoreo: 'main'
+[2025-10-02 02:41:47] Alerta: patrón 'password' encontrado en el archivo 'demo_credentials.json' -> 4:            "password": "prod_password_123456",
+[2025-10-02 02:41:47] Alerta: patrón 'API_KEY' encontrado en el archivo 'demo_credentials.json' -> 9:                "API_KEY": "sk_live_demo_key_abcdef123456"
+[2025-10-02 02:41:47] Alerta: patrón 'API_KEY' encontrado en el archivo 'demo_credentials.json' -> 12:                "API_KEY": "SG.demo_api_key.xyz789"
+[2025-10-02 02:41:47] Alerta: patrón 'secret' encontrado en el archivo 'demo_credentials.json' -> 16:            "jwt_secret": "super_secret_jwt_signing_key_2024",
+[2025-10-02 02:41:47] Alerta: patrón 'secret' encontrado en el archivo 'demo_credentials.json' -> 17:            "session_secret": "session_secret_for_production"
