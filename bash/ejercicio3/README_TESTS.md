@@ -38,7 +38,7 @@ ejercicio3/
 
 ### 1. Ejemplo de la Consigna
 ```bash
-./bash/ejercicio3/ejercicio3 -d ./bash/ejercicio3/in/caso_normal -p "USB,Invalid"
+bash ./ejercicio3 -d ./in/caso_normal -p "USB,Invalid"
 # Salida esperada:
 # USB: 2
 # Invalid: 4
@@ -112,7 +112,7 @@ Aug 23 13:00:15 test.local process: Warning warn WARN different cases.
 ### Opción 1: Script Automatizado (Recomendado)
 ```bash
 cd /home/tfelice/dev/vh/APL
-./bash/ejercicio3/run_tests.sh
+bash ./run_tests.sh
 ```
 
 ### Opción 2: Comandos Manuales
@@ -126,13 +126,13 @@ cd /home/tfelice/dev/vh/APL
 cd /home/tfelice/dev/vh/APL
 
 # Ejemplo básico
-./bash/ejercicio3/ejercicio3 -d ./bash/ejercicio3/in/caso_normal -p "USB,Invalid"
+bash ./ejercicio3 -d ./in/caso_normal -p "USB,Invalid"
 
 # Case-insensitive
-./bash/ejercicio3/ejercicio3 -d ./bash/ejercicio3/in/caso_case_sensitive -p "usb,invalid,error"
+bash ./ejercicio3 -d ./in/caso_case_sensitive -p "usb,invalid,error"
 
 # Una sola palabra
-./bash/ejercicio3/ejercicio3 -d ./bash/ejercicio3/in/caso_normal -p "error"
+bash ./ejercicio3 -d ./in/caso_normal -p "error"
 ```
 
 ## Verificaciones Automáticas
@@ -149,13 +149,13 @@ El script `run_tests.sh` verifica:
 
 ```bash
 # Buscar errores en logs de sistema
-./bash/ejercicio3/ejercicio3 -d ./bash/ejercicio3/in/caso_normal -p "error,failed,exception"
+bash ./ejercicio3 -d ./in/caso_normal -p "error,failed,exception"
 
 # Buscar intentos de conexión
-./bash/ejercicio3/ejercicio3 -d ./bash/ejercicio3/in/caso_normal -p "connection,connect,login"
+bash ./ejercicio3 -d ./in/caso_normal -p "connection,connect,login"
 
 # Buscar eventos de hardware
-./bash/ejercicio3/ejercicio3 -d ./bash/ejercicio3/in/caso_normal -p "USB,device,kernel"
+bash ./ejercicio3 -d ./in/caso_normal -p "USB,device,kernel"
 ```
 
 ## Resultados Esperados

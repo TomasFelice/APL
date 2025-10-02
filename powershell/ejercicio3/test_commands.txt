@@ -6,7 +6,7 @@
 # - Coarite Coarite, Ivan Enrique
 # =================================================
 
-# NOTA: Ejecutar desde el directorio base del proyecto (/home/tfelice/dev/vh/APL)
+# NOTA: Ejecutar desde el directorio base del proyecto (./APL)
 
 # ===========================
 # PRUEBAS BÁSICAS

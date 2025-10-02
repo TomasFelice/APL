@@ -1,0 +1,62 @@
+{
+  "2025-01-01": {
+    "Email": {
+      "tiempo_respuesta_promedio": 48.97,
+      "nota_satisfaccion_promedio": 4.0
+    }
+  },
+  "2025-01-02": {
+    "Telefono": {
+      "tiempo_respuesta_promedio": 12.1,
+      "nota_satisfaccion_promedio": 3.0
+    }
+  },
+  "2025-01-03": {
+    "Chat": {
+      "tiempo_respuesta_promedio": 1.6,
+      "nota_satisfaccion_promedio": 4.0
+    }
+  },
+  "2025-06-15": {
+    "Canal_Especial": {
+      "tiempo_respuesta_promedio": 30.2,
+      "nota_satisfaccion_promedio": 5.0
+    },
+    "Canal_Nuevo": {
+      "tiempo_respuesta_promedio": 25.5,
+      "nota_satisfaccion_promedio": 4.0
+    },
+    "Canal_Test": {
+      "tiempo_respuesta_promedio": 12.8,
+      "nota_satisfaccion_promedio": 3.0
+    }
+  },
+  "2025-08-29": {
+    "Chat": {
+      "tiempo_respuesta_promedio": 1.65,
+      "nota_satisfaccion_promedio": 3.5
+    },
+    "Email": {
+      "tiempo_respuesta_promedio": 101.17,
+      "nota_satisfaccion_promedio": 3.71
+    },
+    "Telefono": {
+      "tiempo_respuesta_promedio": 8.99,
+      "nota_satisfaccion_promedio": 3.29
+    }
+  },
+  "2025-08-30": {
+    "Chat": {
+      "tiempo_respuesta_promedio": 1.84,
+      "nota_satisfaccion_promedio": 3.11
+    },
+    "Email": {
+      "tiempo_respuesta_promedio": 117.74,
+      "nota_satisfaccion_promedio": 3.5
+    },
+    "Telefono": {
+      "tiempo_respuesta_promedio": 9.8,
+      "nota_satisfaccion_promedio": 3.38
+    }
+  }
+}

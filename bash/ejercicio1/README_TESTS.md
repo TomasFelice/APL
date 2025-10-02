@@ -76,25 +76,25 @@ ejercicio1/
 
 ### Opción 1: Script Automatizado (Recomendado)
 ```bash
-cd /home/tfelice/dev/vh/APL
-./bash/ejercicio1/run_tests.sh
+cd /tu-ruta-a-la-carpeta-base/APL/bash/ejercicio1/
+bash ./run_tests.sh
 ```
 
 ### Opción 2: Comandos Manuales
 ```bash
-cd /home/tfelice/dev/vh/APL
+cd /tu-ruta-a-la-carpeta-base/APL/bash/ejercicio1/
 # Seguir los comandos en test_commands.txt
 ```
 
 ### Opción 3: Pruebas Individuales
 ```bash
-cd /home/tfelice/dev/vh/APL
+cd /tu-ruta-a-la-carpeta-base/APL/bash/ejercicio1/
 
 # Ejemplo: Caso normal
-./bash/ejercicio1/ejercicio1 -d ./bash/ejercicio1/in/caso_normal -p
+bash ./ejercicio1.sh -d ./in/caso_normal -p
 
 # Ejemplo: Archivo único
-./bash/ejercicio1/ejercicio1 -d ./bash/ejercicio1/in/caso_archivo_unico -a ./bash/ejercicio1/out/caso_archivo_unico/resultado.json
+bash ./ejercicio1.sh -d ./in/caso_archivo_unico -a ./out/caso_archivo_unico/resultado.json
 ```
 
 ## Casos de Prueba Específicos
@@ -131,7 +131,7 @@ El script `run_tests.sh` verifica:
 
 Para limpiar archivos de salida generados:
 ```bash
-rm -f ./bash/ejercicio1/out/caso_normal/*.json
-rm -f ./bash/ejercicio1/out/caso_archivo_unico/*.json
-rm -f ./bash/ejercicio1/out/casos_especiales/*.json
+rm -f ./out/caso_normal/*.json
+rm -f ./out/caso_archivo_unico/*.json
+rm -f ./out/casos_especiales/*.json
 ```

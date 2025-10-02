@@ -67,49 +67,46 @@ ejecutar_prueba() {
 
 echo -e "${GREEN}=== INICIANDO LOTE DE PRUEBAS AUTOMATIZADO - EJERCICIO 3 ===${NC}"
 
-# Ir al directorio correcto
-cd /home/tfelice/dev/vh/APL
-
 echo -e "${YELLOW}=== 1. PRUEBAS DE AYUDA ===${NC}"
-ejecutar_prueba "Ayuda con -h" "./bash/ejercicio3/ejercicio3 -h > /dev/null" "true"
-ejecutar_prueba "Ayuda con --help" "./bash/ejercicio3/ejercicio3 --help > /dev/null" "true"
+ejecutar_prueba "Ayuda con -h" "bash ./ejercicio3.sh -h > /dev/null" "true"
+ejecutar_prueba "Ayuda con --help" "bash ./ejercicio3.sh --help > /dev/null" "true"
 
 echo -e "${YELLOW}=== 2. PRUEBAS DE PARÁMETROS INCORRECTOS ===${NC}"
-ejecutar_prueba "Sin parámetros" "./bash/ejercicio3/ejercicio3 >/dev/null 2>&1" "false"
-ejecutar_prueba "Solo directorio sin palabras" "./bash/ejercicio3/ejercicio3 -d ./bash/ejercicio3/in/caso_normal >/dev/null 2>&1" "false"
-ejecutar_prueba "Solo palabras sin directorio" "./bash/ejercicio3/ejercicio3 -p \"USB,Invalid\" >/dev/null 2>&1" "false"
-ejecutar_prueba "Parámetro desconocido" "./bash/ejercicio3/ejercicio3 -x parametro_malo >/dev/null 2>&1" "false"
-ejecutar_prueba "Palabras vacías" "./bash/ejercicio3/ejercicio3 -d ./bash/ejercicio3/in/caso_normal -p \"\" >/dev/null 2>&1" "false"
+ejecutar_prueba "Sin parámetros" "bash ./ejercicio3.sh >/dev/null 2>&1" "false"
+ejecutar_prueba "Solo directorio sin palabras" "bash ./ejercicio3.sh -d ./in/caso_normal >/dev/null 2>&1" "false"
+ejecutar_prueba "Solo palabras sin directorio" "bash ./ejercicio3.sh -p \"USB,Invalid\" >/dev/null 2>&1" "false"
+ejecutar_prueba "Parámetro desconocido" "bash ./ejercicio3.sh -x parametro_malo >/dev/null 2>&1" "false"
+ejecutar_prueba "Palabras vacías" "bash ./ejercicio3.sh -d ./in/caso_normal -p \"\" >/dev/null 2>&1" "false"
 
 echo -e "${YELLOW}=== 3. PRUEBAS DE DIRECTORIO INEXISTENTE/INVÁLIDO ===${NC}"
-ejecutar_prueba "Directorio inexistente" "./bash/ejercicio3/ejercicio3 -d /directorio/inexistente -p \"USB,Invalid\" >/dev/null 2>&1" "false"
-ejecutar_prueba "Directorio sin archivos .log" "./bash/ejercicio3/ejercicio3 -d ./bash/ejercicio3/in/caso_sin_logs -p \"USB,Invalid\" >/dev/null 2>&1" "false"
+ejecutar_prueba "Directorio inexistente" "bash ./ejercicio3.sh -d /directorio/inexistente -p \"USB,Invalid\" >/dev/null 2>&1" "false"
+ejecutar_prueba "Directorio sin archivos .log" "bash ./ejercicio3.sh -d ./in/caso_sin_logs -p \"USB,Invalid\" >/dev/null 2>&1" "false"
 
 echo -e "${YELLOW}=== 4. PRUEBAS FUNCIONALES - CASOS EXITOSOS ===${NC}"
-ejecutar_prueba "Ejemplo de la consigna" "./bash/ejercicio3/ejercicio3 -d ./bash/ejercicio3/in/caso_normal -p \"USB,Invalid\"" "true" "USB: 2"
-ejecutar_prueba "Case-insensitive minúsculas" "./bash/ejercicio3/ejercicio3 -d ./bash/ejercicio3/in/caso_case_sensitive -p \"usb,invalid,error\"" "true" "usb: 3"
-ejecutar_prueba "Case-insensitive mayúsculas" "./bash/ejercicio3/ejercicio3 -d ./bash/ejercicio3/in/caso_case_sensitive -p \"USB,INVALID,ERROR\"" "true" "USB: 3"
-ejecutar_prueba "Archivo único" "./bash/ejercicio3/ejercicio3 -d ./bash/ejercicio3/in/caso_archivo_unico -p \"USB,invalid\"" "true" "USB: 3"
-ejecutar_prueba "Una sola palabra" "./bash/ejercicio3/ejercicio3 -d ./bash/ejercicio3/in/caso_normal -p \"error\"" "true" "error: "
-ejecutar_prueba "Palabras inexistentes" "./bash/ejercicio3/ejercicio3 -d ./bash/ejercicio3/in/caso_normal -p \"palabra_inexistente\"" "true" "palabra_inexistente: 0"
+ejecutar_prueba "Ejemplo de la consigna" "bash ./ejercicio3.sh -d ./in/caso_normal -p \"USB,Invalid\"" "true" "USB: 2"
+ejecutar_prueba "Case-insensitive minúsculas" "bash ./ejercicio3.sh -d ./in/caso_case_sensitive -p \"usb,invalid,error\"" "true" "usb: 3"
+ejecutar_prueba "Case-insensitive mayúsculas" "bash ./ejercicio3.sh -d ./in/caso_case_sensitive -p \"USB,INVALID,ERROR\"" "true" "USB: 3"
+ejecutar_prueba "Archivo único" "bash ./ejercicio3.sh -d ./in/caso_archivo_unico -p \"USB,invalid\"" "true" "USB: 3"
+ejecutar_prueba "Una sola palabra" "bash ./ejercicio3.sh -d ./in/caso_normal -p \"error\"" "true" "error: "
+ejecutar_prueba "Palabras inexistentes" "bash ./ejercicio3.sh -d ./in/caso_normal -p \"palabra_inexistente\"" "true" "palabra_inexistente: 0"
 
 echo -e "${YELLOW}=== 5. PRUEBAS DE ORDEN DE PARÁMETROS ===${NC}"
-ejecutar_prueba "Orden -p -d" "./bash/ejercicio3/ejercicio3 -p \"USB,Invalid\" -d ./bash/ejercicio3/in/caso_normal" "true" "USB: 2"
-ejecutar_prueba "Nombres largos" "./bash/ejercicio3/ejercicio3 --palabras \"USB,Invalid\" --directorio ./bash/ejercicio3/in/caso_normal" "true" "USB: 2"
+ejecutar_prueba "Orden -p -d" "bash ./ejercicio3.sh -p \"USB,Invalid\" -d ./in/caso_normal" "true" "USB: 2"
+ejecutar_prueba "Nombres largos" "bash ./ejercicio3.sh --palabras \"USB,Invalid\" --directorio ./in/caso_normal" "true" "USB: 2"
 
 echo -e "${YELLOW}=== 6. PRUEBAS DE RUTAS ===${NC}"
-ejecutar_prueba "Ruta relativa con ./" "./bash/ejercicio3/ejercicio3 -d ./bash/ejercicio3/in/caso_normal -p \"USB,Invalid\"" "true" "USB: 2"
-ejecutar_prueba "Ruta relativa sin ./" "./bash/ejercicio3/ejercicio3 -d bash/ejercicio3/in/caso_normal -p \"USB,Invalid\"" "true" "USB: 2"
+ejecutar_prueba "Ruta relativa con ./" "bash ./ejercicio3.sh -d ./in/caso_normal -p \"USB,Invalid\"" "true" "USB: 2"
+ejecutar_prueba "Ruta relativa sin ./" "bash ./ejercicio3.sh -d ./in/caso_normal -p \"USB,Invalid\"" "true" "USB: 2"
 
 echo -e "${YELLOW}=== 7. PRUEBAS CON ARCHIVOS VACÍOS ===${NC}"
-ejecutar_prueba "Archivo .log vacío" "./bash/ejercicio3/ejercicio3 -d ./bash/ejercicio3/in/caso_vacio -p \"USB,Invalid\"" "true" "USB: 0"
+ejecutar_prueba "Archivo .log vacío" "bash ./ejercicio3.sh -d ./in/caso_vacio -p \"USB,Invalid\"" "true" "USB: 0"
 
 echo -e "${YELLOW}=== 8. PRUEBAS DE FORMATO DE PALABRAS ===${NC}"
-ejecutar_prueba "Palabras con espacios extra" "./bash/ejercicio3/ejercicio3 -d ./bash/ejercicio3/in/caso_normal -p \" USB , Invalid \"" "true" "USB: 2"
+ejecutar_prueba "Palabras con espacios extra" "bash ./ejercicio3.sh -d ./in/caso_normal -p \" USB , Invalid \"" "true" "USB: 2"
 
 echo -e "${YELLOW}=== 9. VERIFICACIÓN DE ARCHIVOS TEMPORALES ===${NC}"
 # Ejecutar comando que debería limpiar archivos temporales
-./bash/ejercicio3/ejercicio3 -d ./bash/ejercicio3/in/caso_normal -p "USB" > /dev/null
+bash ./ejercicio3.sh -d ./in/caso_normal -p "USB" > /dev/null
 
 # Verificar que no quedan archivos temporales
 if ls /tmp/ejercicio3.* >/dev/null 2>&1; then

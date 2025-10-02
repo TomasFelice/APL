@@ -43,35 +43,32 @@ ejecutar_prueba() {
 
 echo -e "${GREEN}=== INICIANDO LOTE DE PRUEBAS AUTOMATIZADO - EJERCICIO 1 ===${NC}"
 
-# Ir al directorio correcto
-cd /home/tfelice/dev/vh/APL
-
 echo -e "${YELLOW}=== 1. PRUEBAS DE AYUDA ===${NC}"
-ejecutar_prueba "Ayuda con -h" "./bash/ejercicio1/ejercicio1 -h > /dev/null" "true"
-ejecutar_prueba "Ayuda con --help" "./bash/ejercicio1/ejercicio1 --help > /dev/null" "true"
+ejecutar_prueba "Ayuda con -h" "bash ./ejercicio1.sh -h > /dev/null" "true"
+ejecutar_prueba "Ayuda con --help" "bash ./ejercicio1.sh --help > /dev/null" "true"
 
 echo -e "${YELLOW}=== 2. PRUEBAS DE PARÁMETROS INCORRECTOS ===${NC}"
-ejecutar_prueba "Sin parámetros" "./bash/ejercicio1/ejercicio1 2>/dev/null" "false"
-ejecutar_prueba "Solo directorio sin salida" "./bash/ejercicio1/ejercicio1 -d ./bash/ejercicio1/in/caso_normal 2>/dev/null" "false"
-ejecutar_prueba "Parámetro desconocido" "./bash/ejercicio1/ejercicio1 -x parametro_malo 2>/dev/null" "false"
-ejecutar_prueba "Conflicto -a y -p juntos" "./bash/ejercicio1/ejercicio1 -d ./bash/ejercicio1/in/caso_normal -a salida.json -p 2>/dev/null" "false"
+ejecutar_prueba "Sin parámetros" "bash ./ejercicio1.sh 2>/dev/null" "false"
+ejecutar_prueba "Solo directorio sin salida" "bash ./ejercicio1.sh -d ./in/caso_normal 2>/dev/null" "false"
+ejecutar_prueba "Parámetro desconocido" "bash ./ejercicio1.sh -x parametro_malo 2>/dev/null" "false"
+ejecutar_prueba "Conflicto -a y -p juntos" "bash ./ejercicio1.sh -d ./in/caso_normal -a salida.json -p 2>/dev/null" "false"
 
 echo -e "${YELLOW}=== 3. PRUEBAS DE DIRECTORIO INEXISTENTE/INVÁLIDO ===${NC}"
-ejecutar_prueba "Directorio inexistente" "./bash/ejercicio1/ejercicio1 -d /directorio/inexistente -p 2>/dev/null" "false"
-ejecutar_prueba "Directorio sin archivos .txt" "./bash/ejercicio1/ejercicio1 -d ./bash/ejercicio1/in/caso_vacio -p 2>/dev/null" "false"
+ejecutar_prueba "Directorio inexistente" "bash ./ejercicio1.sh -d /directorio/inexistente -p 2>/dev/null" "false"
+ejecutar_prueba "Directorio sin archivos .txt" "bash ./ejercicio1.sh -d ./in/caso_vacio -p 2>/dev/null" "false"
 
 echo -e "${YELLOW}=== 4. PRUEBAS FUNCIONALES - CASOS EXITOSOS ===${NC}"
-ejecutar_prueba "Caso normal - ruta relativa" "./bash/ejercicio1/ejercicio1 -d ./bash/ejercicio1/in/caso_normal -p > /dev/null" "true"
-ejecutar_prueba "Caso normal - salida a archivo" "./bash/ejercicio1/ejercicio1 -d ./bash/ejercicio1/in/caso_normal -a ./bash/ejercicio1/out/caso_normal/test_resultado.json" "true"
-ejecutar_prueba "Archivo único" "./bash/ejercicio1/ejercicio1 -d ./bash/ejercicio1/in/caso_archivo_unico -p > /dev/null" "true"
-ejecutar_prueba "Orden parámetros diferente" "./bash/ejercicio1/ejercicio1 -p -d ./bash/ejercicio1/in/caso_archivo_unico > /dev/null" "true"
+ejecutar_prueba "Caso normal - ruta relativa" "bash ./ejercicio1.sh -d ./in/caso_normal -p > /dev/null" "true"
+ejecutar_prueba "Caso normal - salida a archivo" "bash ./ejercicio1.sh -d ./in/caso_normal -a ./out/caso_normal/test_resultado.json" "true"
+ejecutar_prueba "Archivo único" "bash ./ejercicio1.sh -d ./in/caso_archivo_unico -p > /dev/null" "true"
+ejecutar_prueba "Orden parámetros diferente" "bash ./ejercicio1.sh -p -d ./in/caso_archivo_unico > /dev/null" "true"
 
 echo -e "${YELLOW}=== 5. PRUEBAS CON DATOS INVÁLIDOS ===${NC}"
-ejecutar_prueba "Archivos completamente vacíos" "./bash/ejercicio1/ejercicio1 -d ./bash/ejercicio1/in/caso_solo_vacios -p 2>/dev/null" "false"
+ejecutar_prueba "Archivos completamente vacíos" "bash ./ejercicio1.sh -d ./in/caso_solo_vacios -p 2>/dev/null" "false"
 
 echo -e "${YELLOW}=== 6. VERIFICACIÓN DE ARCHIVOS TEMPORALES ===${NC}"
 # Ejecutar comando que debería limpiar archivos temporales
-./bash/ejercicio1/ejercicio1 -d ./bash/ejercicio1/in/caso_archivo_unico -p > /dev/null
+bash ./ejercicio1.sh -d ./in/caso_archivo_unico -p > /dev/null
 
 # Verificar que no quedan archivos temporales
 if ls /tmp/ejercicio1.* >/dev/null 2>&1; then

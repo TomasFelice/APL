@@ -1,7 +1,7 @@
 # =================================================
 # LOTE DE PRUEBAS COMPLETO - EJERCICIO 1 POWERSHELL - VERSIÓN ACTUALIZADA
 # =================================================
-# Ejecutar desde el directorio: /home/tfelice/dev/vh/APL
+# Ejecutar desde el directorio: ./APL
 # Cada comando debe ejecutarse desde la raíz del proyecto
 # 
 # CAMBIOS en esta versión:
