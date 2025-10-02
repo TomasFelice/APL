@@ -1,7 +1,14 @@
 #!/bin/bash
+# =================================================
+# Integrantes:
+# - Felice, Tomas Agustin
+# - Casas, Lautaro Nahuel
+# - Coarite Coarite, Ivan Enrique
+# =================================================
+
 #parametros bash
 #[-n | --nombre] nombre pais a buscar 
-#[-t | --ttl] tiempo en seg. que se guardaran los rest en cache
+#[-t | --ttl] tiempo en dias que se guardaran los resultados en cache
 #[-h | --help] mostrar ayuda
 set -euo pipefail
 mostrar_ayuda(){
