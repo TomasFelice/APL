@@ -70,7 +70,7 @@ fi
 # Nombre del archivo de salida: informe.<basename>
 basedir=$(dirname -- "$MATRIZ")
 basefile=$(basename -- "$MATRIZ")
-outfile="$basedir/informe.$basefile"
+outfile="output/informe.$basefile"
 
 # Ejecutamos el AWK que hace toda la lógica.
 awk -v sep="$SEP" -v mode="$MODE" -f main.awk "$MATRIZ" > "$outfile"
