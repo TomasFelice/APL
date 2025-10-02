@@ -1,7 +1,6 @@
 # =================================================
 # LOTE DE PRUEBAS COMPLETO - EJERCICIO 1 BASH
 # =================================================
-# Ejecutar desde el directorio: /home/tfelice/dev/vh/APL
 # Cada comando debe ejecutarse desde la raíz del proyecto
 
 # =================================================
@@ -9,62 +8,62 @@
 # =================================================
 
 echo "1.1 Ayuda con -h"
-./bash/ejercicio1/ejercicio1 -h
+./bash/ejercicio1/ejercicio1.sh -h
 
 echo -e "\n1.2 Ayuda con --help"
-./bash/ejercicio1/ejercicio1 --help
+./bash/ejercicio1/ejercicio1.sh --help
 
 # =================================================
 # 2. PRUEBAS DE PARÁMETROS INCORRECTOS
 # =================================================
 
 echo "2.1 Sin parámetros"
-./bash/ejercicio1/ejercicio1
+./bash/ejercicio1/ejercicio1.sh
 
 echo -e "\n2.2 Solo directorio sin salida"
-./bash/ejercicio1/ejercicio1 -d ./bash/ejercicio1/in/caso_normal
+./bash/ejercicio1/ejercicio1.sh -d ./bash/ejercicio1/in/caso_normal
 
 echo -e "\n2.3 Parámetro desconocido"
-./bash/ejercicio1/ejercicio1 -x parametro_malo
+./bash/ejercicio1/ejercicio1.sh -x parametro_malo
 
 echo -e "\n2.4 Conflicto -a y -p juntos"
-./bash/ejercicio1/ejercicio1 -d ./bash/ejercicio1/in/caso_normal -a salida.json -p
+./bash/ejercicio1/ejercicio1.sh -d ./bash/ejercicio1/in/caso_normal -a salida.json -p
 
 # =================================================
 # 3. PRUEBAS DE DIRECTORIO INEXISTENTE/INVÁLIDO
 # =================================================
 
 echo "3.1 Directorio inexistente"
-./bash/ejercicio1/ejercicio1 -d /directorio/inexistente -p
+./bash/ejercicio1/ejercicio1.sh -d /directorio/inexistente -p
 
 echo -e "\n3.2 Directorio sin archivos .txt"
-./bash/ejercicio1/ejercicio1 -d ./bash/ejercicio1/in/caso_vacio -p
+./bash/ejercicio1/ejercicio1.sh -d ./bash/ejercicio1/in/caso_vacio -p
 
 echo -e "\n3.3 Archivo en lugar de directorio"
-./bash/ejercicio1/ejercicio1 -d ./bash/ejercicio1/ejercicio1 -p
+./bash/ejercicio1/ejercicio1.sh -d ./bash/ejercicio1/ejercicio1.sh -p
 
 # =================================================
 # 4. PRUEBAS DE RUTAS RELATIVAS Y ABSOLUTAS
 # =================================================
 
 echo "4.1 Ruta relativa con ./"
-./bash/ejercicio1/ejercicio1 -d ./bash/ejercicio1/in/caso_normal -p
+./bash/ejercicio1/ejercicio1.sh -d ./bash/ejercicio1/in/caso_normal -p
 
 echo -e "\n4.2 Ruta relativa sin ./"
-./bash/ejercicio1/ejercicio1 -d bash/ejercicio1/in/caso_normal -p
+./bash/ejercicio1/ejercicio1.sh -d bash/ejercicio1/in/caso_normal -p
 
 echo -e "\n4.3 Ruta absoluta"
-./bash/ejercicio1/ejercicio1 -d /home/tfelice/dev/vh/APL/bash/ejercicio1/in/caso_normal -p
+./bash/ejercicio1/ejercicio1.sh -d /home/tfelice/dev/vh/APL/bash/ejercicio1/in/caso_normal -p
 
 # =================================================
 # 5. PRUEBAS FUNCIONALES - CASOS NORMALES
 # =================================================
 
 echo "5.1 Caso normal - múltiples archivos, salida a pantalla"
-./bash/ejercicio1/ejercicio1 -d ./bash/ejercicio1/in/caso_normal -p
+./bash/ejercicio1/ejercicio1.sh -d ./bash/ejercicio1/in/caso_normal -p
 
 echo -e "\n5.2 Caso normal - múltiples archivos, salida a archivo"
-./bash/ejercicio1/ejercicio1 -d ./bash/ejercicio1/in/caso_normal -a ./bash/ejercicio1/out/caso_normal/resultado_completo.json
+./bash/ejercicio1/ejercicio1.sh -d ./bash/ejercicio1/in/caso_normal -a ./bash/ejercicio1/out/caso_normal/resultado_completo.json
 
 echo -e "\n5.3 Verificar archivo generado"
 cat ./bash/ejercicio1/out/caso_normal/resultado_completo.json
@@ -74,10 +73,10 @@ cat ./bash/ejercicio1/out/caso_normal/resultado_completo.json
 # =================================================
 
 echo "6.1 Archivo único - datos mínimos"
-./bash/ejercicio1/ejercicio1 -d ./bash/ejercicio1/in/caso_archivo_unico -p
+./bash/ejercicio1/ejercicio1.sh -d ./bash/ejercicio1/in/caso_archivo_unico -p
 
 echo -e "\n6.2 Archivo único - cambio de año"
-./bash/ejercicio1/ejercicio1 --directorio ./bash/ejercicio1/in/caso_archivo_unico --archivo ./bash/ejercicio1/out/caso_archivo_unico/cambio_año.json
+./bash/ejercicio1/ejercicio1.sh --directorio ./bash/ejercicio1/in/caso_archivo_unico --archivo ./bash/ejercicio1/out/caso_archivo_unico/cambio_año.json
 
 echo -e "\n6.3 Verificar archivo cambio año"
 cat ./bash/ejercicio1/out/caso_archivo_unico/cambio_año.json
@@ -87,32 +86,32 @@ cat ./bash/ejercicio1/out/caso_archivo_unico/cambio_año.json
 # =================================================
 
 echo "7.1 Archivo con formato incorrecto"
-./bash/ejercicio1/ejercicio1 -d ./bash/ejercicio1/in/caso_datos_invalidos -p
+./bash/ejercicio1/ejercicio1.sh -d ./bash/ejercicio1/in/caso_datos_invalidos -p
 
 # =================================================
 # 8. PRUEBAS DE ORDEN DE PARÁMETROS
 # =================================================
 
 echo "8.1 Orden: -p -d"
-./bash/ejercicio1/ejercicio1 -p -d ./bash/ejercicio1/in/caso_archivo_unico
+./bash/ejercicio1/ejercicio1.sh -p -d ./bash/ejercicio1/in/caso_archivo_unico
 
 echo -e "\n8.2 Orden: -a archivo -d directorio"
-./bash/ejercicio1/ejercicio1 -a ./bash/ejercicio1/out/casos_especiales/orden_parametros.json -d ./bash/ejercicio1/in/caso_archivo_unico
+./bash/ejercicio1/ejercicio1.sh -a ./bash/ejercicio1/out/casos_especiales/orden_parametros.json -d ./bash/ejercicio1/in/caso_archivo_unico
 
 echo -e "\n8.3 Orden con nombres largos"
-./bash/ejercicio1/ejercicio1 --pantalla --directorio ./bash/ejercicio1/in/caso_archivo_unico
+./bash/ejercicio1/ejercicio1.sh --pantalla --directorio ./bash/ejercicio1/in/caso_archivo_unico
 
 # =================================================
 # 9. PRUEBAS DE ARCHIVOS DE SALIDA CON ERRORES
 # =================================================
 
 echo "9.1 Directorio de salida inexistente"
-./bash/ejercicio1/ejercicio1 -d ./bash/ejercicio1/in/caso_archivo_unico -a /directorio/inexistente/archivo.json
+./bash/ejercicio1/ejercicio1.sh -d ./bash/ejercicio1/in/caso_archivo_unico -a /directorio/inexistente/archivo.json
 
 echo -e "\n9.2 Archivo sin permisos de escritura (simulado)"
 touch ./bash/ejercicio1/out/casos_especiales/readonly.json
 chmod 444 ./bash/ejercicio1/out/casos_especiales/readonly.json
-./bash/ejercicio1/ejercicio1 -d ./bash/ejercicio1/in/caso_archivo_unico -a ./bash/ejercicio1/out/casos_especiales/readonly.json
+./bash/ejercicio1/ejercicio1.sh -d ./bash/ejercicio1/in/caso_archivo_unico -a ./bash/ejercicio1/out/casos_especiales/readonly.json
 chmod 644 ./bash/ejercicio1/out/casos_especiales/readonly.json
 
 # =================================================
@@ -121,11 +120,11 @@ chmod 644 ./bash/ejercicio1/out/casos_especiales/readonly.json
 
 echo "10.1 Directorio con archivos que no son .txt mezclados"
 cp ./bash/ejercicio1/in/caso_archivo_unico/datos_minimos.txt ./bash/ejercicio1/in/caso_archivo_unico/datos_minimos.bak
-./bash/ejercicio1/ejercicio1 -d ./bash/ejercicio1/in/caso_archivo_unico -p
+./bash/ejercicio1/ejercicio1.sh -d ./bash/ejercicio1/in/caso_archivo_unico -p
 rm ./bash/ejercicio1/in/caso_archivo_unico/datos_minimos.bak
 
 echo -e "\n10.2 Procesamiento de datos históricos (múltiples años)"
-./bash/ejercicio1/ejercicio1 -d ./bash/ejercicio1/in -a ./bash/ejercicio1/out/casos_especiales/datos_historicos.json
+./bash/ejercicio1/ejercicio1.sh -d ./bash/ejercicio1/in -a ./bash/ejercicio1/out/casos_especiales/datos_historicos.json
 
 echo -e "\n10.3 Verificar datos históricos"
 cat ./bash/ejercicio1/out/casos_especiales/datos_historicos.json
