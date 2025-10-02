@@ -10,7 +10,8 @@ param(
     [string]$LogFile = ".\test-logs\audit.log",
     [int]$WaitTime = 5,
     [switch]$Cleanup,
-    [switch]$Help
+    [switch]$Help,
+    [switch]$Diagnose
 )
 
 function Show-Help {
@@ -18,6 +19,7 @@ function Show-Help {
 Uso:
   .\test-ejercicio4.ps1 [-TestRepo <ruta>] [-ConfigFile <ruta>] [-LogFile <ruta>] [-WaitTime <segundos>]
   .\test-ejercicio4.ps1 -Cleanup   # limpia archivos de test
+  .\test-ejercicio4.ps1 -Diagnose  # solo ejecuta diagnósticos
 
 Opciones:
   -TestRepo     Ruta del repositorio de prueba (default: .\test-repo)
@@ -25,6 +27,7 @@ Opciones:
   -LogFile      Ruta al archivo de logs de test (default: .\test-logs\audit.log)
   -WaitTime     Tiempo de espera entre commits en segundos (default: 5)
   -Cleanup      Limpia archivos y directorios de test
+  -Diagnose     Solo ejecuta verificaciones de prerequisitos
   -Help         Muestra esta ayuda
 
 Descripción:
@@ -40,23 +43,63 @@ function Write-TestLog([string]$message, [string]$color = "White") {
     Write-Host "[$timestamp] $message" -ForegroundColor $color
 }
 
+function Test-Prerequisites {
+    Write-TestLog "=== VERIFICANDO PREREQUISITOS ===" "Cyan"
+    
+    # Verificar PowerShell version
+    $psVersion = $PSVersionTable.PSVersion
+    Write-TestLog "PowerShell versión: $($psVersion.Major).$($psVersion.Minor)" "Gray"
+    
+    # Verificar Git
+    try {
+        $gitVersion = & git --version 2>$null
+        Write-TestLog "Git: $gitVersion" "Gray"
+    } catch {
+        Write-TestLog "⚠️ Git no está disponible" "Yellow"
+    }
+    
+    # Verificar directorio actual
+    $currentDir = Get-Location
+    Write-TestLog "Directorio actual: $currentDir" "Gray"
+    
+    # Verificar archivos necesarios
+    $requiredFiles = @("ejercicio4.ps1", $ConfigFile)
+    foreach ($file in $requiredFiles) {
+        if (Test-Path $file) {
+            Write-TestLog "✓ Encontrado: $file" "Green"
+        } else {
+            Write-TestLog "✗ Falta: $file" "Red"
+        }
+    }
+    
+    # Verificar parámetros
+    Write-TestLog "Parámetros recibidos:" "Gray"
+    Write-TestLog "  TestRepo: '$TestRepo'" "Gray"
+    Write-TestLog "  ConfigFile: '$ConfigFile'" "Gray"
+    Write-TestLog "  LogFile: '$LogFile'" "Gray"
+    Write-TestLog "  WaitTime: $WaitTime" "Gray"
+    
+    Write-TestLog "=== FIN VERIFICACIÓN ===" "Cyan"
+}
+
 function Remove-TestFiles {
     Write-TestLog "Iniciando limpieza de archivos de test..." "Yellow"
     
     # Detener cualquier demonio en ejecución
-    if (Test-Path $TestRepo) {
+    if (-not [string]::IsNullOrWhiteSpace($TestRepo) -and (Test-Path $TestRepo)) {
         try {
-            & ".\ejercicio4.ps1" -Repo $TestRepo -Kill 2>$null
+            $repoPath = (Resolve-Path $TestRepo -ErrorAction Stop).Path
+            & ".\ejercicio4.ps1" -Repo $repoPath -Kill 2>$null
             Write-TestLog "Demonio detenido (si estaba ejecutándose)" "Green"
         } catch {
-            Write-TestLog "No se pudo detener el demonio o no estaba ejecutándose" "Yellow"
+            Write-TestLog "No se pudo detener el demonio o no estaba ejecutándose: $($_.Exception.Message)" "Yellow"
         }
     }
     
     # Eliminar directorios de test
     $dirsToRemove = @($TestRepo, "test-logs")
     foreach ($dir in $dirsToRemove) {
-        if (Test-Path $dir) {
+        if (-not [string]::IsNullOrWhiteSpace($dir) -and (Test-Path $dir)) {
             try {
                 Remove-Item -Path $dir -Recurse -Force
                 Write-TestLog "Eliminado directorio: $dir" "Green"
@@ -139,6 +182,22 @@ function Add-Commit([string]$message, [string[]]$files) {
 function Start-DaemonTest {
     Write-TestLog "Iniciando demonio ejercicio4.ps1..." "Cyan"
     
+    # Validar parámetros antes de continuar
+    if ([string]::IsNullOrWhiteSpace($TestRepo)) {
+        throw "TestRepo está vacío o es null"
+    }
+    if ([string]::IsNullOrWhiteSpace($ConfigFile)) {
+        throw "ConfigFile está vacío o es null"
+    }
+    if ([string]::IsNullOrWhiteSpace($LogFile)) {
+        throw "LogFile está vacío o es null"
+    }
+    
+    # Verificar que el repositorio existe
+    if (-not (Test-Path $TestRepo)) {
+        throw "El repositorio de test '$TestRepo' no existe"
+    }
+    
     # Crear directorio para logs si no existe
     $logDir = Split-Path $LogFile -Parent
     if (-not (Test-Path $logDir)) {
@@ -151,14 +210,36 @@ function Start-DaemonTest {
         New-Item -ItemType File -Path $logPath -Force | Out-Null
     }
     
-    # Convertir rutas a absolutas
-    $repoPath = (Resolve-Path $TestRepo).Path
-    $configPath = (Resolve-Path $ConfigFile).Path
-    $logAbsolutePath = (Resolve-Path $logPath).Path
+    # Convertir rutas a absolutas con manejo de errores
+    try {
+        $repoPath = (Resolve-Path $TestRepo -ErrorAction Stop).Path
+        Write-TestLog "Repo resuelto: $repoPath" "DarkGray"
+    } catch {
+        throw "Error resolviendo ruta del repositorio '$TestRepo': $($_.Exception.Message)"
+    }
+    
+    try {
+        $configPath = (Resolve-Path $ConfigFile -ErrorAction Stop).Path
+        Write-TestLog "Config resuelto: $configPath" "DarkGray"
+    } catch {
+        throw "Error resolviendo ruta del archivo de configuración '$ConfigFile': $($_.Exception.Message)"
+    }
+    
+    try {
+        $logAbsolutePath = (Resolve-Path $logPath -ErrorAction Stop).Path
+        Write-TestLog "Log resuelto: $logAbsolutePath" "DarkGray"
+    } catch {
+        throw "Error resolviendo ruta del archivo de log '$logPath': $($_.Exception.Message)"
+    }
     
     Write-TestLog "Repo: $repoPath" "Gray"
     Write-TestLog "Config: $configPath" "Gray"  
     Write-TestLog "Log: $logAbsolutePath" "Gray"
+    
+    # Verificar que el script ejercicio4.ps1 existe
+    if (-not (Test-Path ".\ejercicio4.ps1")) {
+        throw "No se encontró el archivo ejercicio4.ps1 en el directorio actual"
+    }
     
     try {
         & ".\ejercicio4.ps1" -Repo $repoPath -Configuracion $configPath -Log $logAbsolutePath -Alerta 3
@@ -207,8 +288,40 @@ function Show-LogResults {
 # INICIO DEL TEST
 # ======================
 
+# Verificar si solo queremos diagnóstico
+if ($Diagnose) { 
+    Test-Prerequisites
+    exit 0 
+}
+
+# Verificar si queremos limpiar
+if ($Cleanup) {
+    Remove-TestFiles
+    exit 0
+}
+
 try {
     Write-TestLog "=== INICIANDO TEST DE EJERCICIO4.PS1 ===" "Magenta"
+    
+    # Ejecutar diagnóstico de prerequisitos
+    Test-Prerequisites
+    
+    # Validaciones iniciales más robustas
+    Write-TestLog "Validando parámetros iniciales..." "Cyan"
+    Write-TestLog "TestRepo: '$TestRepo'" "DarkGray"
+    Write-TestLog "ConfigFile: '$ConfigFile'" "DarkGray"
+    Write-TestLog "LogFile: '$LogFile'" "DarkGray"
+    
+    # Verificar que los parámetros no están vacíos
+    if ([string]::IsNullOrWhiteSpace($TestRepo)) {
+        throw "El parámetro TestRepo está vacío"
+    }
+    if ([string]::IsNullOrWhiteSpace($ConfigFile)) {
+        throw "El parámetro ConfigFile está vacío"
+    }
+    if ([string]::IsNullOrWhiteSpace($LogFile)) {
+        throw "El parámetro LogFile está vacío"
+    }
     
     # Verificar que el script principal existe
     if (-not (Test-Path ".\ejercicio4.ps1")) {
@@ -322,8 +435,16 @@ module.exports = { formatDate, capitalize };
     
     # Detener demonio
     Write-TestLog "Deteniendo demonio..." "Yellow"
-    $repoPath = (Resolve-Path $TestRepo).Path
-    & ".\ejercicio4.ps1" -Repo $repoPath -Kill
+    try {
+        if (Test-Path $TestRepo) {
+            $repoPath = (Resolve-Path $TestRepo -ErrorAction Stop).Path
+            & ".\ejercicio4.ps1" -Repo $repoPath -Kill
+        } else {
+            Write-TestLog "Repositorio no existe, no se puede detener demonio" "Yellow"
+        }
+    } catch {
+        Write-TestLog "Error deteniendo demonio: $($_.Exception.Message)" "Yellow"
+    }
     
     # Mostrar resultados
     Show-LogResults
