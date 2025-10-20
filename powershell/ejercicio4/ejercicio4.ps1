@@ -240,23 +240,21 @@ if (-not $RunDaemon) {
   $CONFIG = To-AbsolutePath $Configuracion
   if (-not $CONFIG) { Friendly-Exit "Archivo de configuración inválido: $Configuracion" }
 
-  # Resolver/crear ruta de log si no existe aún
-  $LOG = To-AbsolutePath $Log
-  if (-not $LOG) {
-    try {
-      $LOG = [System.IO.Path]::GetFullPath($Log)
-    } catch {
-      Friendly-Exit "Ruta de log inválida: $Log"
-    }
-    $logDir = Split-Path -Path $LOG -Parent
-    if (-not (Test-Path -Path $logDir)) {
-      try { New-Item -ItemType Directory -Path $logDir -Force | Out-Null } catch { Friendly-Exit "No se pudo crear el directorio del log: $logDir" }
-    }
-    try {
-      if (-not (Test-Path -LiteralPath $LOG -PathType Leaf)) { New-Item -ItemType File -Path $LOG -Force | Out-Null }
-    } catch {
-      Friendly-Exit "No se pudo crear el archivo de log en '$LOG': $($_.Exception.Message)"
-    }
+  # Resolver/crear ruta de log: permitir nombres simples como 'salida' y crear si no existe
+  if ([string]::IsNullOrWhiteSpace($Log)) { Friendly-Exit "Ruta de log inválida: $Log" }
+  try {
+    $LOG = [System.IO.Path]::GetFullPath($Log)
+  } catch {
+    Friendly-Exit "Ruta de log inválida: $Log"
+  }
+  $logDir = Split-Path -Path $LOG -Parent
+  if (-not (Test-Path -Path $logDir)) {
+    try { New-Item -ItemType Directory -Path $logDir -Force | Out-Null } catch { Friendly-Exit "No se pudo crear el directorio del log: $logDir" }
+  }
+  try {
+    if (-not (Test-Path -LiteralPath $LOG -PathType Leaf)) { New-Item -ItemType File -Path $LOG -Force | Out-Null }
+  } catch {
+    Friendly-Exit "No se pudo crear el archivo de log en '$LOG': $($_.Exception.Message)"
   }
 
   # Evitar doble demonio
