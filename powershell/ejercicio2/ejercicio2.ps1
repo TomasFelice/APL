@@ -1,3 +1,38 @@
+<#
+.SYNOPSIS
+  Analiza una matriz de adyacencia de una red de transporte para identificar hubs o caminos mínimos.
+
+.DESCRIPTION
+  Este script carga una matriz de adyacencia desde un archivo y puede operar en dos modos:
+  -Hub    : calcula el grado (cantidad de conexiones) de cada estación y reporta la(s) estación(es) hub.
+  -Camino : calcula todos los caminos de costo mínimo (en tiempo) entre pares de estaciones usando Dijkstra
+  con predecesores múltiples y reporta los pares con el mínimo global.
+
+.PARAMETER Matriz
+  Ruta al archivo que contiene la matriz de adyacencia. El archivo debe contener una matriz cuadrada de números
+  separados por el caracter definido en -Separador. La diagonal debe ser 0 y la matriz debe ser simétrica.
+
+.PARAMETER Hub
+  Modo de ejecución que determina la(s) estación(es) hub. No combinable con -Camino.
+
+.PARAMETER Camino
+  Modo de ejecución que calcula los caminos de tiempo mínimo entre estaciones. No combinable con -Hub.
+
+.PARAMETER Separador
+  (Opcional) Caracter que separa columnas en el archivo de entrada. Por defecto: | .
+
+.PARAMETER Help
+  Muestra la ayuda del script.
+
+.EXAMPLE
+  Get-Help ./ejercicio2.ps1 -Full
+  Muestra la ayuda completa del script.
+
+.EXAMPLE
+  ./ejercicio2.ps1 -Matriz input\mapa_transporte.txt -Hub
+  Genera un informe indicando la(s) estación(es) hub en el archivo output\informe.mapa_transporte.txt.
+#>
+
 # =================================================
 # Integrantes:
 # - Casas, Lautaro Nahuel
