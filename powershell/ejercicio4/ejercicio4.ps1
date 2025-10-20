@@ -5,6 +5,56 @@
 # - Felice, Tomas Agustin
 # =================================================
 
+<#
+.SYNOPSIS
+  Demonio de auditoría Git que escanea cambios y busca patrones en los archivos.
+
+.DESCRIPTION
+  Este script monitorea un repositorio Git y detecta patrones (literales o
+  expresiones regulares) en los archivos modificados entre commits. Puede
+  ejecutarse en modo demonio (detached), iniciarse en foreground para lanzar
+  el demonio, o detener un demonio existente.
+
+.PARAMETER Repo
+  Ruta al repositorio Git a monitorear (obligatorio).
+
+.PARAMETER Configuracion
+  Ruta al archivo de patrones. Cada línea puede ser una palabra literal o
+  empezar con "regex:" seguido de la expresión regular.
+
+.PARAMETER Log
+  Ruta al archivo donde se registrarán las alertas y mensajes.
+
+.PARAMETER Alerta
+  Intervalo en segundos entre comprobaciones (default: 60).
+
+.PARAMETER Kill
+  Detiene el demonio asociado al repositorio (solo requiere -Repo).
+
+.PARAMETER Help
+  Muestra esta ayuda y termina.
+
+.PARAMETER RunDaemon
+  Parámetro interno usado para ejecutar el proceso en modo demonio (no usar
+  manualmente salvo que se sepa lo que se hace).
+
+.EXAMPLE
+  Get-Help .\ejercicio4.ps1
+  Muestra la ayuda breve del script.
+
+.EXAMPLE
+  .\ejercicio4.ps1 -Repo 'C:\mi_repo' -Configuracion patrones.conf -Log alerts.log
+  Inicia el demonio en segundo plano.
+
+.EXAMPLE
+  .\ejercicio4.ps1 -Repo 'C:\mi_repo' -Kill
+  Detiene el demonio asociado al repositorio.
+
+.NOTES
+  Autor(es): Casas, Lautaro Nahuel; Coarite Coarite, Ivan Enrique; Felice, Tomas Agustin
+  Fecha: 2025-10-17
+#>
+
 
 [CmdletBinding()]
 param(
@@ -114,8 +164,8 @@ function Scan-Diff {
     # Literales
     foreach ($patt in $Global:patterns_literal) {
       try {
-        $matches = Select-String -Path $full -Pattern $patt -SimpleMatch -ErrorAction Stop
-        foreach ($m in $matches) {
+        $foundMatches = Select-String -Path $full -Pattern $patt -SimpleMatch -ErrorAction Stop
+        foreach ($m in $foundMatches) {
           Log-Alert "Alerta: patrón '$patt' encontrado en el archivo '$f' -> $($m.LineNumber):$($m.Line.Trim())"
         }
       } catch [System.Management.Automation.ItemNotFoundException] {
@@ -134,8 +184,8 @@ function Scan-Diff {
     # Regex
     foreach ($rp in $Global:patterns_regex) {
       try {
-        $matches = Select-String -Path $full -Pattern $rp -AllMatches -ErrorAction Stop
-        foreach ($m in $matches) {
+        $regexMatches = Select-String -Path $full -Pattern $rp -AllMatches -ErrorAction Stop
+        foreach ($m in $regexMatches) {
           Log-Alert "Alerta: patrón_regex '$rp' encontrado en el archivo '$f' -> $($m.LineNumber):$($m.Line.Trim())"
         }
       } catch {
@@ -158,6 +208,8 @@ if (-not $REPO) { Friendly-Exit "Ruta del repositorio inválida: '$Repo'." }
 $repoHash = (Get-FileHash -InputStream ([System.IO.MemoryStream]::new([System.Text.Encoding]::UTF8.GetBytes($REPO))) -Algorithm SHA1).Hash.Substring(0,12)
 $procIdFILE = Join-Path -Path $env:TEMP -ChildPath ("git_audit_{0}.pid" -f $repoHash)
 $LASTFILE = Join-Path -Path $env:TEMP -ChildPath ("git_audit_{0}.last" -f $repoHash)
+${Global:PIDFILE} = $procIdFILE
+${Global:LASTFILE} = $LASTFILE
 
 # Kill mode (solo requiere Repo)
 if ($Kill) {
@@ -186,9 +238,26 @@ if (-not $RunDaemon) {
     Friendly-Exit "Al iniciar el demonio se requieren -Configuracion y -Log además de -Repo."
   }
   $CONFIG = To-AbsolutePath $Configuracion
-  $LOG = To-AbsolutePath $Log
   if (-not $CONFIG) { Friendly-Exit "Archivo de configuración inválido: $Configuracion" }
-  if (-not $LOG) { Friendly-Exit "Ruta de log inválida: $Log" }
+
+  # Resolver/crear ruta de log si no existe aún
+  $LOG = To-AbsolutePath $Log
+  if (-not $LOG) {
+    try {
+      $LOG = [System.IO.Path]::GetFullPath($Log)
+    } catch {
+      Friendly-Exit "Ruta de log inválida: $Log"
+    }
+    $logDir = Split-Path -Path $LOG -Parent
+    if (-not (Test-Path -Path $logDir)) {
+      try { New-Item -ItemType Directory -Path $logDir -Force | Out-Null } catch { Friendly-Exit "No se pudo crear el directorio del log: $logDir" }
+    }
+    try {
+      if (-not (Test-Path -LiteralPath $LOG -PathType Leaf)) { New-Item -ItemType File -Path $LOG -Force | Out-Null }
+    } catch {
+      Friendly-Exit "No se pudo crear el archivo de log en '$LOG': $($_.Exception.Message)"
+    }
+  }
 
   # Evitar doble demonio
   if (Test-Path $procIdFILE) {
@@ -207,12 +276,12 @@ if (-not $RunDaemon) {
 
   # Lanzar proceso hijo (detached)
   $scriptPath = $MyInvocation.MyCommand.Path
-  $args = @("-NoProfile","-ExecutionPolicy","Bypass","-File",$scriptPath,"-RunDaemon","-Repo",$REPO,"-Configuracion",$CONFIG,"-Log",$LOG,"-Alerta",$Alerta)
+  $childArgs = @("-NoProfile","-ExecutionPolicy","Bypass","-File",$scriptPath,"-RunDaemon","-Repo",$REPO,"-Configuracion",$CONFIG,"-Log",$LOG,"-Alerta",$Alerta)
   try {
-    $proc = Start-Process -FilePath (Get-Command pwsh -ErrorAction SilentlyContinue)?.Source -ArgumentList $args -WindowStyle Hidden -PassThru -ErrorAction Stop
+    $proc = Start-Process -FilePath (Get-Command pwsh -ErrorAction SilentlyContinue)?.Source -ArgumentList $childArgs -WindowStyle Hidden -PassThru -ErrorAction Stop
     if (-not $proc) {
       # Fallback a powershell.exe
-      $proc = Start-Process -FilePath (Get-Command powershell -ErrorAction SilentlyContinue).Source -ArgumentList $args -WindowStyle Hidden -PassThru -ErrorAction Stop
+      $proc = Start-Process -FilePath (Get-Command powershell -ErrorAction SilentlyContinue).Source -ArgumentList $childArgs -WindowStyle Hidden -PassThru -ErrorAction Stop
     }
     # Guardar pid del hijo
     $proc.Id | Out-File -FilePath $procIdFILE -Encoding ascii -Force
@@ -292,19 +361,7 @@ if (-not (Test-Path -Path $LASTFILE)) {
 $last_commit = (Get-Content -Raw -LiteralPath $LASTFILE).Trim()
 
 # Guardar pidfile del proceso actual
-try {
-  $procId = $procId
-  if (-not $procId) { $procId = $procId = $procId = $procId } # no-op to quiet editors
-  $procId = $procId = $procId  # ensures variable exists
-  # use $procId automatic variable
-  $procId = $procId = $procId = $procId
-} catch { }
-# actual PID
-$procId = $procId = $PSPID = $procId = $procId = $procId
-# fallback: $procId automatic variable is $procId in PSCore; use $procId or $env:PID
-if (-not $procId) { $procId = $procId -ne $null ? $procId : $procId }
-# write pid
-try { $procId | Out-File -FilePath $procIdFILE -Encoding ascii -Force } catch { Write-Warning "No se pudo escribir pidfile $procIdFILE" }
+try { $PID | Out-File -FilePath $procIdFILE -Encoding ascii -Force } catch { Write-Warning "No se pudo escribir pidfile $procIdFILE" }
 
 # Bucle principal
 try {
