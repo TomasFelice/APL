@@ -1,47 +1,39 @@
-# función para borrar pred arrays
-# pred_count[v] da la cantidad de predecesores, pred[v,k] enumerados 1..pred_count[v]
+# Funciones helper para comparaciones flotantes
+function equals(a, b) { return ((a - b) <= eps && (b - a) <= eps) }
+function is_zero(x) { return (x <= eps && x >= -eps) }
+function is_positive(x) { return x > eps }
 
-function clear_preds() {
-  for (i = 1; i <= n; i++) {
-    if (pred_count[i] > 0) {
-      for (k = 1; k <= pred_count[i]; k++) delete pred[i,k]
-    }
-    pred_count[i] = 0
-  }
-}
-
-# Dijkstra desde s
-function dijkstra(source, node, current, neighbor, weight, tentative_dist, found_flag, min_dist) {
+# Dijkstra optimizado
+function dijkstra(source,    node, current, neighbor, weight, tentative_dist, min_dist) {
+  # Inicialización
   for (node = 1; node <= n; node++) {
-    dist[node] = INF
-    visited[node] = 0
-    pred_count[node] = 0
+    dist[node] = INF; visited[node] = 0; pred_count[node] = 0
   }
   dist[source] = 0
+  
   while (1) {
+    # Encontrar nodo no visitado con distancia mínima
     current = -1; min_dist = INF
-    for (node = 1; node <= n; node++){
+    for (node = 1; node <= n; node++) {
       if (!visited[node] && dist[node] < min_dist) {
         min_dist = dist[node]; current = node
       }
     }
-
     if (current == -1) break
+    
     visited[current] = 1
+    # Relajar vecinos
     for (neighbor = 1; neighbor <= n; neighbor++) {
       weight = mat[current,neighbor]
-      if (neighbor != current && weight > eps) {
+      if (neighbor != current && is_positive(weight)) {
         tentative_dist = dist[current] + weight
-        if (tentative_dist + eps < dist[neighbor]) {
+        if (tentative_dist < dist[neighbor] - eps) {
+          # Nuevo camino más corto
           dist[neighbor] = tentative_dist
-          # reset predecesores
-          if (pred_count[neighbor] > 0) {
-            for (k = 1; k <= pred_count[neighbor]; k++) delete pred[neighbor,k]
-          }
           pred_count[neighbor] = 1
           pred[neighbor,1] = current
-        } else if ( (tentative_dist - dist[neighbor]) <= eps && (dist[neighbor] - tentative_dist) <= eps ) {
-          # nuevo camino con mismo coste -> añadimos predecesor
+        } else if (equals(tentative_dist, dist[neighbor])) {
+          # Camino alternativo con mismo costo
           pred_count[neighbor]++
           pred[neighbor, pred_count[neighbor]] = current
         }
@@ -117,24 +109,24 @@ END {
     exit 4
   }
   n = nrows
-  # comprobación de simetría y diagonal cero
+  
+  # Validación consolidada de matriz
   for (i = 1; i <= n; i++) {
     for (j = 1; j <= n; j++) {
       a = mat[i,j] + 0
       b = mat[j,i] + 0
-      # diagonal -> se exige 0 (por definicion)
-      if (i == j) {
-        if ( (a > eps) || (a < -eps) ) {
-          printf("ERROR: diagonal [%d,%d] debe ser 0, es %g\n", i, j, a) > "/dev/stderr"
-          exit 5
-        }
+      
+      # Diagonal debe ser cero
+      if (i == j && !is_zero(a)) {
+        printf("ERROR: diagonal [%d,%d] debe ser 0, es %g\n", i, j, a) > "/dev/stderr"
+        exit 5
       }
-      # simetría (permitimos pequeñas diferencias por floats)
-      if ( (a - b) > eps || (b - a) > eps ) {
+      # Verificar simetría
+      if (!equals(a, b)) {
         printf("ERROR: Matriz no simétrica en (%d,%d): %g != %g\n", i, j, a, b) > "/dev/stderr"
         exit 6
       }
-      # pesos negativos no permitidos
+      # No permitir pesos negativos
       if (a < -eps) {
         printf("ERROR: Peso negativo detectado en (%d,%d): %g\n", i, j, a) > "/dev/stderr"
         exit 7
@@ -144,15 +136,13 @@ END {
 
   print "## Informe de análisis de red de transporte"
 
-  # Si piden hub:
+  # Modo hub: encontrar estaciones con más conexiones
   if (mode == "hub") {
-    # contar conexiones (no contar diagonal, y valores > 0 significan conexión)
     maxdeg = -1
-    delete hubs
     for (i = 1; i <= n; i++) {
       deg = 0
       for (j = 1; j <= n; j++) {
-        if (i != j && mat[i,j] > eps) deg++
+        if (i != j && is_positive(mat[i,j])) deg++
       }
       degs[i] = deg
       if (deg > maxdeg) {
@@ -169,38 +159,30 @@ END {
     print "Grado (cantidad de conexiones) por estación:"
     for (i = 1; i <= n; i++) printf("  Estación %d: %d\n", i, degs[i])
     print ""
-    printf("**Hub(s) de la red:**\n")
-    sepout = " "
-    for (i in hubs) {
-      printf("Estacion %d: %d conexiones\n", i,maxdeg)
-      sepout = ", "
-    }
-    print "\n"
+    print "**Hub(s) de la red:**"
+    for (i in hubs) printf("Estacion %d: %d conexiones\n", i, maxdeg)
+    print ""
     exit 0
   }
 
-  # Si piden camino(s): implementar Dijkstra desde cada fuente (todos los pares), guardando predecesores múltiples
+  # Modo camino: encontrar caminos más cortos
   if (mode == "camino") {
-    printf("ANALISIS: Caminos minimos (Dijkstra) para cada par de estaciones\n")
+    print "ANALISIS: Caminos minimos (Dijkstra) para cada par de estaciones"
     printf("Estaciones: %d\n\n", n)
 
     global_min = INF
-    # Ejecutar Dijkstra desde cada s y guardar resultados
+    # Ejecutar Dijkstra desde cada origen
     for (s = 1; s <= n; s++) {
-      clear_preds()
       dijkstra(s)
       for (t = 1; t <= n; t++) {
+        if (t != s && dist[t] < INF/2 && dist[t] < global_min) {
+          global_min = dist[t]
+        }
+        # Guardar resultados
         dist_saved[s, t] = dist[t]
         pred_count_saved[s, t] = pred_count[t]
-        if (pred_count[t] > 0) {
-          for (k = 1; k <= pred_count[t]; k++) pred_saved[s, t, k] = pred[t, k]
-        } else {
-          # aseguramos que no queden restos antiguos
-          pred_count_saved[s, t] = 0
-        }
-        # actualizar mínimo global (excluimos s==t y caminos inalcanzables)
-        if (t != s && dist[t] < INF/2) {
-          if (dist[t] + eps < global_min) global_min = dist[t]
+        for (k = 1; k <= pred_count[t]; k++) {
+          pred_saved[s, t, k] = pred[t, k]
         }
       }
     }
@@ -210,27 +192,21 @@ END {
       exit 0
     }
 
-    # Imprimir únicamente pares cuyo tiempo mínimo == global_min
+    # Mostrar solo pares con tiempo mínimo global
     for (s = 1; s <= n; s++) {
-      printed_any = 0
-      # primero revisamos si existe al menos un destino t para este s con dist == global_min
+      has_min_path = 0
       for (t = 1; t <= n; t++) {
-        if (t == s) continue
-        # comparar con tolerancia eps
-        d = dist_saved[s, t]
-        if (d < INF/2 && ( (d - global_min) <= eps && (global_min - d) <= eps )) {
-          printed_any = 1
+        if (t != s && equals(dist_saved[s, t], global_min)) {
+          has_min_path = 1
           break
         }
       }
-      if (printed_any) {
+      if (has_min_path) {
         print "----"
         printf("Origen: %d\n", s)
         for (t = 1; t <= n; t++) {
-          if (t == s) continue
-          d = dist_saved[s, t]
-          if (d < INF/2 && ( (d - global_min) <= eps && (global_min - d) <= eps )) {
-            printf("Destino %d: tiempo minimo = %s\n", t, format_time(d))
+          if (t != s && equals(dist_saved[s, t], global_min)) {
+            printf("Destino %d: tiempo minimo = %s\n", t, format_time(dist_saved[s, t]))
             print "Rutas (todas las rutas con tiempo minimo):"
             delete tmparr
             dfs_build(s, t, tmparr, 0)

@@ -31,46 +31,33 @@ SEP="|"
 while [[ $# -gt 0 ]]; do
   case "$1" in
     -m|--matriz)
-      MATRIZ="$2";
+      MATRIZ="$2"
       shift 2;;
     -h|--hub)
-      MODE="hub";
-      shift ;;
+      MODE="hub"
+      shift;;
     -c|--camino)
-      MODE="camino";
-      shift ;;
+      MODE="camino"
+      shift;;
     -s|--separador)
-      if [[ ${#2} -ne 1 ]]; then
-        echo "Error: El separador debe ser un único carácter." >&2
-        exit 1
-      fi
-      SEP="$2";
+      [[ ${#2} -ne 1 ]] && { echo "Error: El separador debe ser un único carácter." >&2; exit 1; }
+      SEP="$2"
       shift 2;;
     --help)
-      show_usage;
-      shift;;
-    -* | *)
+      show_usage;;
+    *)
       echo "Error: Parametro desconocido: $1" >&2
       echo "Use --help para ver la ayuda" >&2
-      exit 1
-      ;;
+      exit 1;;
   esac
 done
 
-if [[ -z "$MATRIZ" || -z "$MODE" ]]; then
-  echo "Faltan argumentos obligatorios."
-  show_usage
-fi
+# Validaciones consolidadas
+[[ -z "$MATRIZ" || -z "$MODE" ]] && { echo "Faltan argumentos obligatorios."; show_usage; }
+[[ ! -f "$MATRIZ" ]] && { echo "Archivo no encontrado: $MATRIZ"; exit 2; }
 
-if [[ ! -f "$MATRIZ" ]]; then
-  echo "Archivo no encontrado: $MATRIZ"
-  exit 2
-fi
-
-# Nombre del archivo de salida: informe.<basename>
-basedir=$(dirname -- "$MATRIZ")
-basefile=$(basename -- "$MATRIZ")
-outfile="output/informe.$basefile"
+# Archivo de salida simplificado
+outfile="output/informe.$(basename -- "$MATRIZ")"
 
 # Ejecutamos el AWK que hace toda la lógica.
 awk -v sep="$SEP" -v mode="$MODE" -f main.awk "$MATRIZ" > "$outfile"
