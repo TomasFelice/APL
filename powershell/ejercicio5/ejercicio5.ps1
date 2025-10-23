@@ -84,7 +84,7 @@ function Test-FileExpirado {
         $fileName
     )
     Write-Debug "Validando el estado del archivo: $fileName"
-    $SEGUNDOS = 10
+    #$SEGUNDOS = 10
     $fileObj = Get-ChildItem -Path "$($dirCache)\$($fileName)"
 
     $campos = $fileName -split "[_.]"
@@ -92,7 +92,7 @@ function Test-FileExpirado {
     [int]$ttlFile = $campos[1]
 
     #$fechaExp = $fileObj.LastWriteTime.AddDays($ttlFile)
-    $fechaExp = $fileObj.LastWriteTime.AddSeconds($ttlFile * $SEGUNDOS)
+    $fechaExp = $fileObj.LastWriteTime.AddSeconds($ttlFile)
     $fechaAct = Get-Date
     
     Write-Debug "---Fecha modificacion: $($fileObj.LastWriteTimeString)"
