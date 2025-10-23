@@ -7,32 +7,32 @@
 .PARAMETER nombre
     El nombre del pais a buscar
 .PARAMETER ttl
-    El tiempo (en dias) que perdurara el archivo que almacenara la
+    El tiempo (en segundos) que perdurara el archivo que almacenara la
     informacion del pais buscado.
-    Si se omite la opcion, el valor por defecto es de un dia.
+    Si se omite la opcion, el valor por defecto es 1 (un segundo).
 .EXAMPLE
     .\ejercicio5.ps1 -nombre argentina
 
     Muestra informacion basica para el pais argentina.
-    Se establece la duracion de 1 dia para el archivo que contendra
+    Se establece la duracion de 1 segundo para el archivo que contendra
     la informacion para el pais Argentina
 .EXAMPLE
     .\ejercicio5.ps1 -nombre argentina -ttl 2
 
     Muesta informacion basica para el pais argentina
-    Se establece la duracion de 2 dias para el archivo que contendra
+    Se establece la duracion de 2 segundos para el archivo que contendra
     la informacion para el pais Argentina
 .EXAMPLE
     .\ejercicio5.ps1 -nombre "saudi arabia"
 
     Muestra informacion basica para el pais saudi arabia
-    Se establece la duracion de 1 dia para el archivo que contendra
+    Se establece la duracion de 1 segundos para el archivo que contendra
     la informacion para el pais buscado.
 .EXAMPLE
     .\ejercicio5.ps1 -nombre "saudi arabia", argentina, colombia
 
     Muestra informacion basica para los paises buscados.
-    Se establecera la duracion de 1 dia para cada archivo que contendra
+    Se establecera la duracion de 1 segundo para cada archivo que contendra
     la informacion de cada pais ingresado.
 .EXAMPLE
     .\ejercicio5.ps1 -nombre sw
@@ -52,7 +52,7 @@ Param(
     [string[]]$nombre,
 
     [Parameter(Mandatory = $False)]
-    [ValidateSet(1, 2, 3, 4, 5)]
+    [ValidateRange(1, 60)]
     [int]$ttl = 1
 )
 function Get-PaisWeb {
@@ -84,13 +84,15 @@ function Test-FileExpirado {
         $fileName
     )
     Write-Debug "Validando el estado del archivo: $fileName"
-    $fileObj = Get-ChildItem -Path "$($dirCache)/$($fileName)"
+    $SEGUNDOS = 10
+    $fileObj = Get-ChildItem -Path "$($dirCache)\$($fileName)"
 
     $campos = $fileName -split "[_.]"
 
     [int]$ttlFile = $campos[1]
 
-    $fechaExp = $fileObj.LastWriteTime.AddDays($ttlFile)
+    #$fechaExp = $fileObj.LastWriteTime.AddDays($ttlFile)
+    $fechaExp = $fileObj.LastWriteTime.AddSeconds($ttlFile * $SEGUNDOS)
     $fechaAct = Get-Date
     
     Write-Debug "---Fecha modificacion: $($fileObj.LastWriteTimeString)"
@@ -121,7 +123,9 @@ function Get-PaisFile() {
     #Los caracteres prohibidos en nombres de archivos y directorios
     #en Windows incluyen: \ / : * ? " < > | y caracteres de control.         
 
-    $fileJsonMv = "$(Get-Date -Format "yyyy-MM-dd")_$($fileName)"
+    #$fileJsonMv = "$(Get-Date -Format "yyyy-MM-dd")_$($fileName)"
+    $fileJsonMv = "$(Get-Date -UFormat "%s")_$($fileName)"
+    
     $pathJsonMv = Join-Path -Path $dirPapelera -ChildPath $fileJsonMv
 
     Write-Debug "---Cambio de directorio para el archivo: $FileName"
@@ -223,4 +227,4 @@ $listResultPaises | ForEach-Object {
     Write-Host "Moneda: $($_.moneda)"
     Write-Host ""
 }
-# *************** FIN MAIN BLOCK ***************
+# *************** FIN MAIN BLOCK ****************

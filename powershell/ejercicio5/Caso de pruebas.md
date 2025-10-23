@@ -1,6 +1,6 @@
 # Casos de prueba
 
-## B-01 Búsqueda simple de un país (sin caché).
+## B-01 Búsqueda simple de un país (sin especificar ttl caché).
 
 - Powershell
     - `.\ejercicio5.ps1 -nombre argentina`
