@@ -18,7 +18,10 @@ mostrar_ayuda(){
 
     Opciones:
     -n, --nombre PAIS   --> Especificar el nombre del pais (obligatorio).
-    -t, --ttl TIEMPO    --> Especificar el tiempo en dias para la duracion de los archivos.
+    -t, --ttl TIEMPO    --> Especificar el tiempo para la duracion de los archivos.
+                            Un ttl de tiempo 1 corresponde a 10 SEGUNDOS
+                            Un ttl de tiempo 2 corresponde a 20 SEGUNDOS
+                            Se tomaran multiplos de 10 SEGUNDOS
     -h, --help          --> Mostrar este mensaje de ayuda.
 
     Ejemplos:
@@ -140,21 +143,22 @@ get_pais_web(){
 
 es_file_expirado(){
     fileName=$(basename "$1")
-
+    #SEGUNDOS=10
     #Ejemplo nombre de archivo: yyyy-mm-dd_nompais_ttl.json
-    fechaCreacion=$(echo "$fileName" | awk -F'_' '{print $1}')
+    tsCreado=$(echo "$fileName" | awk -F'_' '{print $1}')
+    #tiempoCreado=${tiempoCreado//-/:}
     nomPais=$(echo "$fileName" | awk -F'_' '{print $2}')
     ttlExts=$(echo "$fileName" | awk -F'_' '{print $3}')
     ttlFile=$(echo "$ttlExts" | awk -F'.' '{print $1}')
 
-    fechaExp=$(date -d "${fechaCreacion} + ${ttlFile} days" "+%Y-%m-%d")
-
-    tsFechaAct=$(date +%s)
-    tsFechaExp=$(date -d "$fechaExp" +%s)
+    #fechaExp=$(date -d "${fechaCreacion} + ${ttlFile} days" "+%Y-%m-%d")
+    tsTiempoAct=$(date +%s)
+    #tsFechaExp=$(date -d "$fechaExp" +%s)
+    tsTiempoExp=$((tsCreado + ttlFile))
 
     expirado=0
 
-    if [[ "$tsFechaExp" -lt "$tsFechaAct" ]]; then
+    if [[ "$tsTiempoExp" -lt "$tsTiempoAct" ]]; then
         expirado=1
     fi
 
@@ -169,7 +173,6 @@ get_pais_file(){
     if [[ $(es_file_expirado "${fileName}") == 1 ]]; then
         echo -e "${AMARILLO}---Archivo local desactualizado. ${fileName}${RESET}"
         echo -e "${AMARILLO}---Solicitar nueva informacion actualizada.${RESET}"
-
         mv "${fileName}" "${dirPapelera}"
         #Se encontro el archivo json pero esta vencido
         #por lo tanto se debera realizar una llamada a la api
@@ -193,7 +196,7 @@ VERDE='\e[32m'
 RESET='\e[0m'
 ## ttl validos
 TTL_MIN=1
-TTL_MAX=5
+TTL_MAX=60
 ## Lista de opciones
 OPTIONS="n:t:h"
 LONGOPTS="nombre:,ttl:,help"
@@ -278,11 +281,11 @@ fi
 paisesVal=()
 for item in "${paises[@]}"
 do
-    # Validar que el nombre del país no esté vacío y tenga al menos 2 caracteres
-    if [[ -n "${item}" && "${item}" =~ ^[a-zA-Z\ ]{2,}$ ]]; then
+    # Validar que el nombre del país no esté vacío y tenga al menos 4 caracteres
+    if [[ -n "${item}" && "${item}" =~ ^[a-zA-Z\ ]{4,}$ ]]; then
         paisesVal+=("${item}")
     else
-        echo -e "${AMARILLO}Advertencia: '${item}' no es un nombre de país válido (debe tener al menos 2 letras).${RESET}"
+        echo -e "${AMARILLO}---Adv: '${item}' no es un nombre de país válido (debe tener al menos 4 letras).${RESET}"
     fi
 done
 
@@ -294,7 +297,7 @@ fi
 for paisItem in "${paisesVal[@]}"
 do
     echo "Procesando busqueda pais: ${paisItem}"
-    fileJson=$(find "$dirCache" -type f -name "*$(echo "${paisItem}" | sed 's/ /-/g')_*.json")
+    fileJson=$(find "$dirCache" -type f -name "*_$(echo "${paisItem}" | sed 's/ /-/g')_*.json")
     hayInfoFile=1
     if [[ -f "${fileJson}" ]]; then
         #echo "---obteniendo informacion desde un archivo json."
@@ -347,7 +350,8 @@ do
     fi
 
     if [[ ${hayInfoWeb} == 0 ]]; then
-        newFilejson="${dirCache}/$(date +%Y-%m-%d)_$(echo "${paisItem}" | sed 's/ /-/g')_${ttl}.json"
+        #newFilejson="${dirCache}/$(date +%Y-%m-%d)_$(echo "${paisItem}" | sed 's/ /-/g')_${ttl}.json"
+        newFilejson="${dirCache}/$(date "+%s")_$(echo "${paisItem}" | sed 's/ /-/g')_${ttl}.json"
         mv ${fileJson} ${newFilejson}
         echo -e "${VERDE}Informacion guardada en el archivo. $(basename "${newFilejson}")${RESET}"
     fi

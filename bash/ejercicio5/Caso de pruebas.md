@@ -1,6 +1,6 @@
 # Casos de prueba
 
-## B-01 Búsqueda simple de un país (sin caché).
+## B-01 Búsqueda simple de un país (sin especificar un ttl caché).
 
 - Powershell
     - `.\ejercicio5.ps1 -nombre argentina`
@@ -9,37 +9,39 @@
 
 Muestra la información de Argentina.
 
-Crea el archivo de caché: argentina_1.json.
+Crea el archivo de caché: argentina_1.json - Powershell
+Crea el archivo de caché: timestamps_argentina_1.json - Bash
 
 Muestra mensajes de "Buscando información desde la web" e "Información guardada".
 
 * * *
 
-## B-02 Búsqueda simple de un país ya en caché (no expirado, TTL por defecto).
+## B-02 Búsqueda de un país con un TTL de 60 segundos.
 
 - Powershell
-    - `.\ejercicio5.ps1 -nombre argentina`
+    - `.\ejercicio5.ps1 -nombre brasil -ttl 60`
 - Bash
-    - `./ejercicio5.sh -n argentina`
+    - `` `./ejercicio5.sh -n brasil -ttl 60` ``
 
-Muestra la información de Argentina.
+Muestra la información de brasil.
+
+Crea el archivo de caché: brasil_60.json - Powershell
+Crea el archivo de caché: timestamps_brasil_60.json - Bash
+
+* * *
+
+## B-03 Búsqueda simple de un país ya en caché.
+
+- Powershell
+    - `.\ejercicio5.ps1 -nombre brasil`
+- Bash
+    - `./ejercicio5.sh -n brasil`
+
+Muestra la información de Brasil.
 
 Muestra mensajes de "Buscando información desde un archivo local" y "Archivo local disponible".
 
 No llama a la API web.
-
-* * *
-
-## B-03 Búsqueda de un país con un TTL de 2 días.
-
-- Powershell
-    - `.\ejercicio5.ps1 -nombre brasil -ttl 2`
-- Bash
-    - `` `./ejercicio5.sh -n brasil -ttl 2` ``
-
-Muestra la información de brasil.
-
-Crea el archivo de caché: brasil_2.json.
 
 * * *
 
@@ -61,40 +63,34 @@ Muestra mensajes de "Buscando información desde la web" e "Información guardad
 ## B-05 Búsqueda de múltiples países.
 
 - Powershell
-    - `.\ejercicio5.ps1 -nombre peru, colombia -ttl 3`
+    - `.\ejercicio5.ps1 -nombre peru, colombia -ttl 30`
 - Bash
-    - `./ejercicio5.sh --nombre peru, -n colombia -ttl 3`
+    - `./ejercicio5.sh --nombre peru, -n colombia -ttl 30`
 
 Muestra la información de Perú y Colombia (buscándolos o desde caché).
 
-Crea o actualiza archivos de caché (e.g., peru_3.json, colombia_3.json).
+Crea o actualiza archivos de caché (e.g., peru_30.json, colombia_30.json).
 
 * * *
 
-## C-06 Archivo de caché expirado (simulado).
+## C-06 Archivo de caché expirado (ttl en segundos).
 
-Agregar manualmente un archivo en la carpeta **Pais.**
-
-Realizar una copia de un archivo expirado desde la carpeta **LoteDePrueba** hacia la carpeta **Pais**.
-
-Nombre del archivo a copiar (entorno Windows): **mexico_1.json**
-
-Nombre del archivo a copiar (entorno Linux): **2025-09-28_ecuador.json**
+Realizar una busqueda nuevamente del pais "argentina".
 
 Luego ejecutar:
 
 - Powershell
-    - `.\ejercicio5.ps1 -nombre mexico`
+    - `.\ejercicio5.ps1 -nombre argentina -ttl 30`
 - Bash
-    - `./ejercicio5.sh -n ecuador`
+    - `./ejercicio5.sh -n argentina -t 30`
 
-Muestra el mensaje "Archivo local desactualizado". Mueve el archivo expirado a la carpeta Papelera.
+Muestra el mensaje "Archivo local desactualizado".
+Mueve el archivo expirado a la carpeta Papelera.
 
 Busca la información desde la web.
 
-Crea un nuevo archivo mexico_1.json.
-
-Crea un nuevo archivo yyyy-mm-dd_ecuador_1.json
+Crea un nuevo archivo: argentina_30.json - Powershell
+Crea un nuevo archivo: timestamps_argentina_30.json - Bash
 
 * * *
 
@@ -124,7 +120,7 @@ No se realiza ninguna búsqueda.
 
 * * *
 
-## E-09 Búsqueda con múltiples coincidencias (entre 2 y 10).
+## E-09 Búsqueda con múltiples coincidencias.
 
 - Powershell
     - `.\ejercicio5.ps1 -nombre korea`
@@ -142,11 +138,11 @@ No añade nada a los resultados ni guarda en caché.
 ## P-10 Uso de un valor de ttl no permitido.
 
 - Powershell
-    - `.\ejercicio5.ps1 -nombre brasil -ttl 7`
+    - `.\ejercicio5.ps1 -nombre brasil -ttl 70`
 - Bash
-    - `./ejercicio5.sh -n brasil -ttl 7`
+    - `./ejercicio5.sh -n brasil -ttl 70`
 
-Falla la ejecución del script (error de validación de parámetros de PowerShell) antes de que comience la ejecución del Main block, debido a \[ValidateSet(1, 2, 3, 4, 5)\].
+Falla la ejecución del script (error de validación de parámetros de PowerShell) antes de que comience la ejecución del Main block, debido a \[ValidateRange(1, 60)\].
 
 Falla la ejecución del script (error de validación de parámetros de Bash) antes de que comience la ejecución del Main block, debido a un control de rango permitido en bash.
 
