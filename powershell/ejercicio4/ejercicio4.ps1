@@ -206,8 +206,9 @@ if (-not $REPO) { Friendly-Exit "Ruta del repositorio inválida: '$Repo'." }
 
 # Nombre único para pid/last (hash de ruta)
 $repoHash = (Get-FileHash -InputStream ([System.IO.MemoryStream]::new([System.Text.Encoding]::UTF8.GetBytes($REPO))) -Algorithm SHA1).Hash.Substring(0,12)
-$procIdFILE = Join-Path -Path $env:TEMP -ChildPath ("git_audit_{0}.pid" -f $repoHash)
-$LASTFILE = Join-Path -Path $env:TEMP -ChildPath ("git_audit_{0}.last" -f $repoHash)
+$tempDir = if ($env:TEMP) { $env:TEMP } elseif ($env:TMPDIR) { $env:TMPDIR } else { '/tmp' }
+$procIdFILE = Join-Path -Path $tempDir -ChildPath ("git_audit_{0}.pid" -f $repoHash)
+$LASTFILE = Join-Path -Path $tempDir -ChildPath ("git_audit_{0}.last" -f $repoHash)
 ${Global:PIDFILE} = $procIdFILE
 ${Global:LASTFILE} = $LASTFILE
 
@@ -276,10 +277,10 @@ if (-not $RunDaemon) {
   $scriptPath = $MyInvocation.MyCommand.Path
   $childArgs = @("-NoProfile","-ExecutionPolicy","Bypass","-File",$scriptPath,"-RunDaemon","-Repo",$REPO,"-Configuracion",$CONFIG,"-Log",$LOG,"-Alerta",$Alerta)
   try {
-    $proc = Start-Process -FilePath (Get-Command pwsh -ErrorAction SilentlyContinue)?.Source -ArgumentList $childArgs -WindowStyle Hidden -PassThru -ErrorAction Stop
+    $proc = Start-Process -FilePath (Get-Command pwsh -ErrorAction SilentlyContinue)?.Source -ArgumentList $childArgs -PassThru -ErrorAction Stop
     if (-not $proc) {
       # Fallback a powershell.exe
-      $proc = Start-Process -FilePath (Get-Command powershell -ErrorAction SilentlyContinue).Source -ArgumentList $childArgs -WindowStyle Hidden -PassThru -ErrorAction Stop
+      $proc = Start-Process -FilePath (Get-Command powershell -ErrorAction SilentlyContinue).Source -ArgumentList $childArgs -PassThru -ErrorAction Stop
     }
     # Guardar pid del hijo
     $proc.Id | Out-File -FilePath $procIdFILE -Encoding ascii -Force
