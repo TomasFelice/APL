@@ -21,7 +21,7 @@ Muestra mensajes de "Buscando información desde la web" e "Información guardad
 - Powershell
     - `.\ejercicio5.ps1 -nombre brasil -ttl 60`
 - Bash
-    - `` `./ejercicio5.sh -n brasil -ttl 60` ``
+    - `` `./ejercicio5.sh -n brasil --ttl 60` ``
 
 Muestra la información de brasil.
 
