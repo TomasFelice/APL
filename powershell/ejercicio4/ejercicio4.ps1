@@ -277,10 +277,10 @@ if (-not $RunDaemon) {
   $scriptPath = $MyInvocation.MyCommand.Path
   $childArgs = @("-NoProfile","-ExecutionPolicy","Bypass","-File",$scriptPath,"-RunDaemon","-Repo",$REPO,"-Configuracion",$CONFIG,"-Log",$LOG,"-Alerta",$Alerta)
   try {
-    $proc = Start-Process -FilePath (Get-Command pwsh -ErrorAction SilentlyContinue)?.Source -ArgumentList $childArgs -PassThru -ErrorAction Stop
+    $proc = Start-Process -FilePath (Get-Command pwsh -ErrorAction SilentlyContinue)?.Source -ArgumentList $childArgs -WindowStyle Hidden -PassThru -ErrorAction Stop
     if (-not $proc) {
       # Fallback a powershell.exe
-      $proc = Start-Process -FilePath (Get-Command powershell -ErrorAction SilentlyContinue).Source -ArgumentList $childArgs -PassThru -ErrorAction Stop
+      $proc = Start-Process -FilePath (Get-Command powershell -ErrorAction SilentlyContinue).Source -ArgumentList $childArgs -WindowStyle Hidden -PassThru -ErrorAction Stop
     }
     # Guardar pid del hijo
     $proc.Id | Out-File -FilePath $procIdFILE -Encoding ascii -Force
