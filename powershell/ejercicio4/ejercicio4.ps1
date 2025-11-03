@@ -277,11 +277,30 @@ if (-not $RunDaemon) {
   $scriptPath = $MyInvocation.MyCommand.Path
   $childArgs = @("-NoProfile","-ExecutionPolicy","Bypass","-File",$scriptPath,"-RunDaemon","-Repo",$REPO,"-Configuracion",$CONFIG,"-Log",$LOG,"-Alerta",$Alerta)
   try {
-    $proc = Start-Process -FilePath (Get-Command pwsh -ErrorAction SilentlyContinue)?.Source -ArgumentList $childArgs -WindowStyle Hidden -PassThru -ErrorAction Stop
-    if (-not $proc) {
-      # Fallback a powershell.exe
-      $proc = Start-Process -FilePath (Get-Command powershell -ErrorAction SilentlyContinue).Source -ArgumentList $childArgs -WindowStyle Hidden -PassThru -ErrorAction Stop
+    $pwshPath = (Get-Command pwsh -ErrorAction SilentlyContinue)?.Source
+    $psWinPath = (Get-Command powershell -ErrorAction SilentlyContinue)?.Source
+
+    if (-not $pwshPath -and -not $psWinPath) {
+      Friendly-Exit "No se encontró 'pwsh' ni 'powershell' en el PATH para iniciar el demonio."
     }
+
+    # Construir parámetros comunes y agregar WindowStyle solo en Windows
+    $startParams = @{
+      ArgumentList = $childArgs
+      PassThru     = $true
+      ErrorAction  = 'Stop'
+    }
+    if ($IsWindows) { $startParams.WindowStyle = 'Hidden' }
+
+    if ($pwshPath) {
+      $startParams.FilePath = $pwshPath
+      $proc = Start-Process @startParams
+    } else {
+      # Fallback a powershell (solo Windows)
+      $startParams.FilePath = $psWinPath
+      $proc = Start-Process @startParams
+    }
+
     # Guardar pid del hijo
     $proc.Id | Out-File -FilePath $procIdFILE -Encoding ascii -Force
     Write-Output "Demonio iniciado (PID $($proc.Id)). Log: $LOG"
