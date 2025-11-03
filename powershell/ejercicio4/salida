@@ -1,0 +1,20 @@
+[2025-10-30 20:00:54] Info: usando rama local para monitoreo: 'main'
+[2025-10-30 20:01:25] Alerta: patrón 'API_KEY' encontrado en el archivo 'vars.js' -> 1:const API_KEY = 1234;
+[2025-10-30 20:01:25] Alerta: patrón 'API_KEY' encontrado en el archivo 'vars.js' -> 2:const API_KEY2 = 1234;
+[2025-10-30 20:02:06] Alerta: patrón 'API_KEY' encontrado en el archivo 'vars.js' -> 1:const API_KEY = 1234;
+[2025-10-30 20:02:06] Alerta: patrón 'API_KEY' encontrado en el archivo 'vars.js' -> 2:const API_KEY2 = 1234;
+[2025-10-30 20:02:06] Alerta: patrón 'API_KEY' encontrado en el archivo 'vars.js' -> 3:const API_KEY4 = FERCHOGOD;
+[2025-10-30 20:17:29] Info: usando rama local para monitoreo: 'HEAD'
+[2025-10-30 20:49:13] Info: usando rama local para monitoreo: 'main'
+[2025-10-30 20:50:23] Alerta: patrón 'API_KEY' encontrado en el archivo 'keys.js' -> 1:API_KEY = 1234;
+[2025-10-30 20:50:23] Alerta: patrón 'API_KEY' encontrado en el archivo 'keys.js' -> 2:new_API_KEY = 5678;
+[2025-10-30 20:54:03] Info: usando rama local para monitoreo: 'main'
+[2025-10-30 20:54:35] Info: usando rama local para monitoreo: 'main'
+[2025-10-30 20:55:25] Alerta: patrón 'API_KEY' encontrado en el archivo 'keys.js' -> 1:API_KEY = 1234;
+[2025-10-30 20:55:25] Alerta: patrón 'API_KEY' encontrado en el archivo 'keys.js' -> 2:new_API_KEY = 5678;
+[2025-10-30 20:55:25] Alerta: patrón 'secret' encontrado en el archivo 'keys.js' -> 3:super_secret_key = 999;
+[2025-11-02 21:17:05] Info: usando rama local para monitoreo: 'main'
+[2025-11-02 21:18:16] Alerta: patrón 'API_KEY' encontrado en el archivo 'keys.js' -> 1:API_KEY = 1234;
+[2025-11-02 21:18:16] Alerta: patrón 'API_KEY' encontrado en el archivo 'keys.js' -> 2:new_API_KEY = 5678;
+[2025-11-02 21:18:16] Alerta: patrón 'secret' encontrado en el archivo 'keys.js' -> 3:super_secret_key = 999;
+[2025-11-02 21:18:16] Alerta: patrón 'secret' encontrado en el archivo 'keys.js' -> 4:secret_key = FERCHOGRANDE;
